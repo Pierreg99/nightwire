@@ -1,0 +1,12 @@
+{
+  "name": "NIGHTWIRE",
+  "short_name": "NIGHTWIRE",
+  "description": "Neo-Duisburg night district. Tactical FPS city slice.",
+  "start_url": "/?apk=1",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#07080c",
+  "theme_color": "#07080c",
+  "icons": []
+}

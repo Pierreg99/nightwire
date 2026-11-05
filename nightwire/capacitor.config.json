@@ -1,0 +1,12 @@
+{
+  "appId": "de.nightwire.district",
+  "appName": "NIGHTWIRE",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false,
+    "backgroundColor": "#07080c"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

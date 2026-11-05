@@ -1,0 +1,19 @@
+{
+  "v": 1,
+  "kind": "nightwire-skin",
+  "identity": {
+    "name": "Riven Hale",
+    "callsign": "WIRE",
+    "mask": "#121418",
+    "jacket": "#1c242c",
+    "jacketAccent": "#3ee0ff",
+    "undershirt": "#14181c",
+    "pants": "#1a1e24",
+    "shoes": "#0c0e10",
+    "weapon": "#2a3238",
+    "charm": "#3ee0ff",
+    "tattoo": "#3ee0ff",
+    "wear": 0.38,
+    "glow": 0.15
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "Neo-Duisburg Night District",
+  "version": 1,
+  "playerSpawn": { "x": 6.2, "y": 0, "z": -26.5, "yaw": 3.5 },
+  "zones": [
+    {
+      "id": "docks",
+      "name": "Hafen / Docks",
+      "landmark": "Crane WH-09",
+      "light": "cyan crane neon + sodium work lamps",
+      "aabb": { "min": [-48, -2, -118], "max": [48, 48, -18] }
+    },
+    {
+      "id": "strip",
+      "name": "Neon-Strip",
+      "landmark": "RHEINLICHT",
+      "light": "magenta club bounce on wet asphalt",
+      "aabb": { "min": [-22, -1, -18], "max": [22, 40, 58] }
+    },
+    {
+      "id": "hof",
+      "name": "Plattenbau-Hof",
+      "landmark": "BLOCK 17",
+      "light": "sick fluorescent courtyard",
+      "aabb": { "min": [-40, -1, 58], "max": [40, 42, 138] }
+    }
+  ],
+  "extracts": {
+    "boat": { "x": -10, "y": 0.6, "z": -104 },
+    "apt4b": { "x": -18.5, "y": 3.2, "z": 96.4 }
+  }
+}

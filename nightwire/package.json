@@ -1,0 +1,22 @@
+{
+  "name": "nightwire",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/vite.mjs dev",
+    "build": "node scripts/vite.mjs build",
+    "preview": "node scripts/vite.mjs preview",
+    "apk": "node scripts/apk.mjs",
+    "deb": "node scripts/deb.mjs",
+    "exe": "node scripts/exe.mjs",
+    "test:quality": "node src/core/quality-selftest.mjs",
+    "test:layout": "node src/world/layout-selftest.mjs"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.3"
+  }
+}
