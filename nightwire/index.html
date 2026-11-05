@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#07080c" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>NIGHTWIRE — Neo-Duisburg</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+
+    <div id="boot-splash">NIGHTWIRE · BOOTING DISTRICT</div>
+    <div id="boot-error" class="hidden"></div>
+    <div id="nui">
+      <div id="title" class="layer">
+        <div class="title-bg"></div>
+        <div class="title-grain"></div>
+        <div class="title-inner">
+          <div class="title-kicker">NEO-DUISBURG · RHEIN-RUHR NIGHT DISTRICT</div>
+          <h1>NIGHTWIRE</h1>
+          <div class="title-sub">COLD CARGO · VERTICAL SLICE</div>
+          <button id="btn-jack" class="btn-jack">CLICK / TAP TO JACK IN</button>
+          <div class="title-hint">WASD · MOUSE · PAD · 1–5 GUNS · F · TAB · F3 · T TOUCH</div>
+        </div>
+      </div>
+
+      <div id="hud" class="layer hidden">
+        <div id="crosshair">
+          <i class="ch t"></i><i class="ch r"></i><i class="ch b"></i><i class="ch l"></i>
+          <i class="ch-dot"></i>
+        </div>
+        <div id="hitmarker"></div>
+        <div id="hurt"></div>
+        <div class="hud-top">
+          <div class="obj-wrap">
+            <div class="obj-kicker">OBJECTIVE</div>
+            <div id="objective">Stand by</div>
+          </div>
+          <div id="heat" class="heat" aria-label="heat"></div>
+          <div id="zone-tag">HAFEN</div>
+        </div>
+        <div id="compass">
+          <span data-z="docks">HAFEN</span><i>|</i>
+          <span data-z="strip">STRIP</span><i>|</i>
+          <span data-z="hof">HOF</span>
+        </div>
+        <div id="subtitles"></div>
+        <div id="killfeed"></div>
+        <div class="hud-bottom">
+          <div class="vitals">
+            <div class="bar-label">VITAL</div>
+            <div class="bar"><i id="hp-fill"></i></div>
+            <div class="bar-label">STAMINA</div>
+            <div class="bar thin"><i id="st-fill"></i></div>
+          </div>
+          <div id="interact-prompt" class="hidden"></div>
+          <div class="weapon-plate">
+            <div id="w-name">VPR-9</div>
+            <div id="w-ammo"><b>30</b><span> / 90</span></div>
+            <div id="w-mode">HIP</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="phone" class="hidden">
+        <div class="phone-frame">
+          <div class="phone-notch"></div>
+          <div class="phone-status">
+            <span id="phone-clock">23:41</span>
+            <span class="sig">WIRE · KITE</span>
+          </div>
+          <div id="phone-home" class="phone-body">
+            <div class="app-grid">
+              <button data-app="jobs">JOBS</button>
+              <button data-app="map">MAP</button>
+              <button data-app="wardrobe">WARDROBE</button>
+              <button data-app="radio">RADIO</button>
+              <button data-app="messages">MSG</button>
+              <button data-app="settings">SET</button>
+            </div>
+            <div class="phone-note">NIGHTWIRE OS · NO NAME TAGS</div>
+          </div>
+          <div id="phone-app" class="phone-body hidden"></div>
+          <button id="phone-back" class="phone-back hidden">HOME</button>
+        </div>
+      </div>
+
+      <div id="pause" class="layer hidden">
+        <div class="pause-card">
+          <div class="title-kicker">NIGHTWIRE</div>
+          <h2>PAUSED</h2>
+          <label>Look sensitivity <input id="set-sens" type="range" min="0.4" max="3" step="0.05" /></label>
+          <label>ADS sensitivity <input id="set-ads" type="range" min="0.3" max="2" step="0.05" /></label>
+          <label>Touch look sensitivity <input id="set-touchsens" type="range" min="0.4" max="3" step="0.05" /></label>
+          <label>Auto-sprint threshold <input id="set-sprint" type="range" min="0.4" max="1" step="0.02" /></label>
+          <label>FOV <input id="set-fov" type="range" min="60" max="100" step="1" /></label>
+          <label>HUD scale <input id="set-hud" type="range" min="0.75" max="1.4" step="0.05" /></label>
+          <label>Graphics
+            <select id="set-quality">
+              <option value="auto">AUTO</option>
+              <option value="ultra">ULTRA</option>
+              <option value="high">HIGH</option>
+              <option value="medium">MEDIUM</option>
+              <option value="mobile">MOBILE / APK</option>
+            </select>
+          </label>
+          <label>Pad look <input id="set-padsens" type="range" min="0.6" max="4" step="0.05" /></label>
+          <label class="chk"><input id="set-fx" type="checkbox" /> Reduced FX (mobile profile)</label>
+          <label class="chk"><input id="set-motion" type="checkbox" /> Motion (bob / grain)</label>
+          <label class="chk"><input id="set-cb" type="checkbox" /> Color-assist heat icons</label>
+          <label class="chk"><input id="set-touch" type="checkbox" /> Show touch layout</label>
+          <label class="chk"><input id="set-gyro" type="checkbox" /> Gyro look (off by default)</label>
+          <div class="pause-actions">
+            <button id="btn-resume" class="btn-jack sm">RESUME</button>
+            <button id="btn-skim" class="btn-ghost">SKIM EDITOR</button>
+          </div>
+          <p class="perf" id="quality-readout">ULTRA</p>
+          <p class="perf">` cycles graphics. ULTRA is the ceiling. Drop to HIGH if the frame rate falls. 60 desktop mid · 30+ mobile.</p>
+        </div>
+      </div>
+
+      <div id="touch" class="hidden">
+        <div id="stick-move" class="stick"><i></i></div>
+        <div id="look-pad"></div>
+        <button id="t-fire" class="tbtn fire">FIRE</button>
+        <button id="t-ads" class="tbtn">ADS</button>
+        <button id="t-reload" class="tbtn">R</button>
+        <button id="t-jump" class="tbtn">JMP</button>
+        <button id="t-crouch" class="tbtn">CR</button>
+        <button id="t-use" class="tbtn">F</button>
+        <button id="t-veh" class="tbtn">VEH</button>
+        <button id="t-phone" class="tbtn phone-t">PH</button>
+        <button id="t-gun" class="tbtn">WPN</button>
+        <button id="t-pause" class="tbtn">II</button>
+      </div>
+
+      <div id="fade"></div>
+      <div id="notify"></div>
+      <canvas id="wardrobe-view" class="hidden" width="280" height="360"></canvas>
+
+      <div id="endcard" class="layer hidden">
+        <div class="title-inner">
+          <div class="title-kicker" id="end-kicker">EXTRACT CONFIRMED</div>
+          <h1>NIGHTWIRE</h1>
+          <div class="title-sub" id="end-vo">COLD CARGO</div>
+          <div class="unlock" id="end-unlock">LOADOUT UNLOCK · DOCK-WEAR</div>
+          <button id="btn-again" class="btn-jack">CONTINUE IN DISTRICT</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
