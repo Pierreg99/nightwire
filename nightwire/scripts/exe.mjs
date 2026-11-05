@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
+const web = '/tmp/nw-web';
 const prefix = '/tmp/nw-electron';
 const appDir = '/tmp/nw-electron-app';
 
@@ -18,7 +19,10 @@ function fail(reason) {
   process.exit(1);
 }
 
-if (!run(process.execPath, ['scripts/vite.mjs', 'build'])) process.exit(1);
+if (!run(process.execPath, ['scripts/vite.mjs', 'build', '--outDir', web, '--emptyOutDir'])) process.exit(1);
+mkdirSync(dist, { recursive: true });
+rmSync(path.join(dist, 'assets'), { recursive: true, force: true });
+cpSync(web, dist, { recursive: true, filter: (src) => !src.endsWith('.map') });
 
 const electronPkg = path.join(prefix, 'node_modules/electron/package.json');
 const packager = path.join(prefix, 'node_modules/@electron/packager/bin/electron-packager.js');
@@ -32,9 +36,9 @@ if (!existsSync(electronPkg) || !existsSync(packager)) {
 
 rmSync(appDir, { recursive: true, force: true });
 mkdirSync(appDir, { recursive: true });
-cpSync(dist, appDir, {
+cpSync(web, appDir, {
   recursive: true,
-  filter: (src) => !/\.(apk|deb|exe)$/.test(src),
+  filter: (src) => !src.endsWith('.map'),
 });
 writeFileSync(path.join(appDir, 'package.json'), JSON.stringify({
   name: 'nightwire',

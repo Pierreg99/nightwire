@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
+const web = '/tmp/nw-web';
 const out = path.join(dist, 'nightwire_1.0.0_all.deb');
 
 function run(cmd, args) {
@@ -12,7 +13,10 @@ function run(cmd, args) {
   return r.status === 0;
 }
 
-if (!run(process.execPath, ['scripts/vite.mjs', 'build'])) process.exit(1);
+if (!run(process.execPath, ['scripts/vite.mjs', 'build', '--outDir', web, '--emptyOutDir'])) process.exit(1);
+mkdirSync(dist, { recursive: true });
+rmSync(path.join(dist, 'assets'), { recursive: true, force: true });
+cpSync(web, dist, { recursive: true, filter: (src) => !src.endsWith('.map') });
 
 if (spawnSync('sh', ['-c', 'command -v dpkg-deb'], { encoding: 'utf8' }).status !== 0) {
   console.error('DEB was not built. Missing: dpkg-deb.');
@@ -25,9 +29,9 @@ const payload = path.join(stage, 'usr/share/nightwire');
 mkdirSync(path.join(stage, 'DEBIAN'), { recursive: true });
 mkdirSync(path.join(stage, 'usr/bin'), { recursive: true });
 mkdirSync(payload, { recursive: true });
-cpSync(dist, payload, {
+cpSync(web, payload, {
   recursive: true,
-  filter: (src) => !/\.(apk|deb|exe)$/.test(src),
+  filter: (src) => !src.endsWith('.map'),
 });
 
 writeFileSync(path.join(stage, 'DEBIAN/control'), `Package: nightwire

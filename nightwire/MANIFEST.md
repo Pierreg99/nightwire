@@ -42,7 +42,7 @@
 
 Zone cuts are `z < -16` docks and `z < 96` strip, owned by `src/world/layout.js`. Harbor anchors did not move (spawn, Warehouse 09, boat, crane, beat 0 at `z < -50`). Strip inner faces sit at `|x| = 18` (36 m lane) with a ≥ 10 m alley to the outer row. Hof content, including Wohnung 4B, moves by `HOF_SHIFT` +40 and stays in the hof. Layout and quality self-tests pass. Production build passes. No headed WebGL frame in this environment.
 
-`npm run deb` produced `dist/nightwire_1.0.0_all.deb`. `npm run apk` exited 1 because `ANDROID_HOME` is unset. Java is present. The Android project assets were synced. `npm run exe` is the Electron packager path and is recorded only when `dist/nightwire-win/nightwire.exe` exists.
+`npm run deb` produced `dist/nightwire_1.0.0_all.deb`. `npm run apk` exited 1 because `ANDROID_HOME` is unset. Java is present. The Android project assets were synced. `npm run exe` wrote `dist/nightwire-win/nightwire.exe` (Electron 33.4.11, win32 x64). The exe needs the rest of that folder beside it.
 
 **Loop 4 — ULTRA quality, shooter spread, pad / APK.** Graphics presets AUTO/ULTRA/HIGH/MEDIUM/MOBILE. Desktop AUTO resolves to ULTRA: DPR cap 2, 2048 moon shadow, 4× MSAA, OutputPass + ACES, restrained bloom, blue-shadow grade. Light budget no longer zeros later zone lights; crane, RHEINLICHT and BLOCK 17 stay pinned. Hof puddle under the tubes. Water clearcoat. Five guns: VPR-9 auto, RH-47 auto, KESTREL semi, HAUL-12 8-pellet pump, NORD-6 semi DMR. Gamepad (standard mapping), touch weapon/pause, safe-area insets. `npm run apk` emits the web bundle; an `.apk` still needs the Android SDK.
 
