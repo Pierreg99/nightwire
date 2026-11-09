@@ -1,4 +1,5 @@
 import { nowClock } from '../core/math.js';
+import { lockPointer, unlockPointer } from '../core/Input.js';
 
 export class Phone {
   constructor(game) {
@@ -25,7 +26,7 @@ export class Phone {
     this.openState = true;
     this.game.mode = 'phone';
     this.game.input.blocked = true;
-    document.exitPointerLock();
+    unlockPointer();
     this.el.classList.remove('hidden');
     this.showHome();
     this.game.audio?.ui();
@@ -38,7 +39,7 @@ export class Phone {
     if (this.game.mode === 'phone') {
       this.game.mode = 'play';
       this.game.input.blocked = false;
-      this.game.canvas.requestPointerLock();
+      lockPointer(this.game.canvas);
     }
   }
 

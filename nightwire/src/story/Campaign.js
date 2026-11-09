@@ -1,4 +1,5 @@
 import { saveSkins } from '../characters/SkinData.js';
+import { lockPointer, unlockPointer } from '../core/Input.js';
 
 export class Campaign {
   constructor(game) {
@@ -114,7 +115,7 @@ export class Campaign {
     saveSkins(this.game.skins);
     this.game.mode = 'end';
     this.game.input.blocked = true;
-    document.exitPointerLock();
+    unlockPointer();
     const card = document.getElementById('endcard');
     card.classList.remove('hidden');
     document.getElementById('end-kicker').textContent = kind === 'boat' ? 'DOCK EXTRACT' : 'SAFEHOUSE EXTRACT';
@@ -126,7 +127,7 @@ export class Campaign {
       card.classList.add('hidden');
       this.game.mode = 'play';
       this.game.input.blocked = false;
-      this.game.canvas.requestPointerLock();
+      lockPointer(this.game.canvas);
       this.objective = 'District is yours. Heat still remembers.';
     };
     this.game.hud.subtitle('KITE', kind === 'boat' ? 'Boat’s clean. Don’t come back loud.' : 'Sleep in 4B. Wardrobe’s yours — Dock-Wear is unlocked.');

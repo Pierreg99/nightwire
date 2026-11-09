@@ -1,4 +1,5 @@
 import { saveSettings } from '../core/Settings.js';
+import { lockPointer, unlockPointer } from '../core/Input.js';
 
 export class PauseMenu {
   constructor(game) {
@@ -56,7 +57,7 @@ export class PauseMenu {
   open() {
     this.game.mode = 'pause';
     this.game.input.blocked = true;
-    document.exitPointerLock();
+    unlockPointer();
     this.el.classList.remove('hidden');
   }
 
@@ -65,7 +66,8 @@ export class PauseMenu {
     if (this.game.mode === 'pause') {
       this.game.mode = 'play';
       this.game.input.blocked = false;
-      this.game.canvas.requestPointerLock();
+      this.game.audio?.resume?.();
+      lockPointer(this.game.canvas);
     }
   }
 }

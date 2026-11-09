@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { addCover, addLamp, boxMesh, mat } from '../world/props.js';
+import { lockPointer, unlockPointer } from '../core/Input.js';
 
 const PALETTE = ['cover', 'light', 'vehicle', 'npc', 'trigger', 'landmark'];
 
@@ -19,7 +20,7 @@ export class MapSkimEditor {
     this.openState = true;
     this.game.mode = 'skim';
     this.game.input.blocked = true;
-    document.exitPointerLock();
+    unlockPointer();
     this._ui(true);
     this.game.canvas.addEventListener('pointerdown', this._onClick);
     this.game.hud.notify('SKIM · click to place · DROP playtest · ESC exit');
@@ -37,7 +38,7 @@ export class MapSkimEditor {
     if (this.game.mode === 'skim') {
       this.game.mode = 'play';
       this.game.input.blocked = false;
-      this.game.canvas.requestPointerLock();
+      lockPointer(this.game.canvas);
     }
   }
 

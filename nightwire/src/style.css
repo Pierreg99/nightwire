@@ -210,9 +210,11 @@ h1 {
 .stick i {
   position: absolute; width: 48px; height: 48px; border-radius: 50%;
   background: rgba(220,231,240,0.35); left: 33px; top: 33px;
+  will-change: transform; pointer-events: none;
 }
-#look-pad { pointer-events: auto; position: absolute; right: 0; top: 18%; width: 42%; height: 55%; }
+#look-pad { pointer-events: auto; position: absolute; right: env(safe-area-inset-right); top: 18%; width: 42%; height: 55%; touch-action: none; }
 .tbtn {
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
   pointer-events: auto; position: absolute; width: 56px; height: 56px; border-radius: 50%;
   border: 1px solid rgba(220,231,240,0.3); background: rgba(8,10,16,0.4);
   color: #e8f4ff; font: inherit; letter-spacing: 0.08em; font-size: 11px;
@@ -222,15 +224,15 @@ h1 {
   bottom: max(36px, env(safe-area-inset-bottom));
   width: 78px; height: 78px; background: rgba(255,45,106,0.28);
 }
-#t-ads { right: 118px; bottom: 44px; }
-#t-reload { right: 36px; bottom: 128px; }
-#t-jump { right: 168px; bottom: 110px; }
-#t-crouch { left: 160px; bottom: 36px; }
-#t-use { left: 50%; bottom: 22px; transform: translateX(-50%); }
-#t-veh { left: 160px; bottom: 100px; }
+#t-ads { right: calc(118px + env(safe-area-inset-right)); bottom: calc(44px + env(safe-area-inset-bottom)); }
+#t-reload { right: calc(36px + env(safe-area-inset-right)); bottom: calc(128px + env(safe-area-inset-bottom)); }
+#t-jump { right: calc(168px + env(safe-area-inset-right)); bottom: calc(110px + env(safe-area-inset-bottom)); }
+#t-crouch { left: calc(160px + env(safe-area-inset-left)); bottom: calc(36px + env(safe-area-inset-bottom)); }
+#t-use { left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); transform: translateX(-50%); }
+#t-veh { left: calc(160px + env(safe-area-inset-left)); bottom: calc(100px + env(safe-area-inset-bottom)); }
 #t-phone { right: max(18px, env(safe-area-inset-right)); top: max(18px, env(safe-area-inset-top)); width: 44px; height: 44px; }
 #t-pause { left: max(18px, env(safe-area-inset-left)); top: max(18px, env(safe-area-inset-top)); width: 44px; height: 44px; }
-#t-gun { left: 160px; bottom: 164px; }
+#t-gun { left: calc(160px + env(safe-area-inset-left)); bottom: calc(164px + env(safe-area-inset-bottom)); }
 
 #notify {
   position: absolute; top: 92px; left: 50%; transform: translateX(-50%);
@@ -250,3 +252,19 @@ h1 {
   .vitals { width: 140px; }
   #w-ammo { font-size: 22px; }
 }
+
+/* Touch layout on: keep HUD readouts out from under the thumbs and the II / PH buttons. */
+body.touch-on .hud-top {
+  left: calc(76px + env(safe-area-inset-left));
+  right: calc(76px + env(safe-area-inset-right));
+  top: max(18px, env(safe-area-inset-top));
+}
+body.touch-on .hud-bottom {
+  bottom: auto; top: calc(74px + env(safe-area-inset-top));
+  left: calc(76px + env(safe-area-inset-left));
+  right: calc(76px + env(safe-area-inset-right));
+  align-items: flex-start;
+}
+body.touch-on #killfeed { top: calc(150px + env(safe-area-inset-top)); right: calc(76px + env(safe-area-inset-right)); }
+body.touch-on #subtitles { bottom: calc(150px + env(safe-area-inset-bottom)); max-width: 52vw; }
+body.touch-on #w-ammo { font-size: 20px; }
