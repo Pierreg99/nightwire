@@ -1,6 +1,6 @@
 /**
- * Machala Integration & Wiring Pass v1
- * Game bootstrap wiring render, combat, mission and phone.
+ * NIGHTWIRE v2.0.1 — Game Bootstrap
+ * Wires render, combat, mission, phone, assets, design and features.
  */
 
 import { createRenderFoundation } from './renderBridge.js';
@@ -10,11 +10,21 @@ import { createColdCargoCampaign } from '../story/coldCargo.js';
 import { createPhone } from '../ui/phone.js';
 import { createHUD } from '../ui/hud.js';
 import { createInteractionSystem } from '../ui/interaction.js';
+import { createGameAssetLibrary } from '../assets/proceduralAssets.js';
+import { createDesignSystem } from '../design/designSystem.js';
+import { createFeatureRegistry } from '../features/featureRegistry.js';
 
-export function createGameBootstrap({ canvas, scene, camera, container }) {
+export function createGameBootstrap({
+  canvas,
+  scene,
+  camera,
+  container,
+  featureOverrides = {}
+}) {
   const eventBus = createEventBusSafe();
   const monitoring = createMonitoring();
   const feedback = createFeedbackSystem();
+  const features = createFeatureRegistry(featureOverrides);
 
   const render = createRenderFoundation({ canvas, scene, camera });
   const campaign = createColdCargoCampaign();
@@ -22,8 +32,15 @@ export function createGameBootstrap({ canvas, scene, camera, container }) {
   const phone = createPhone({ container });
   const interaction = createInteractionSystem({ container });
 
+  const design = features.isEnabled('design.system')
+    ? createDesignSystem({ root: document.body })
+    : null;
+
+  const assets = features.isEnabled('assets.procedural')
+    ? createGameAssetLibrary()
+    : null;
+
   function createEventBusSafe() {
-    // Local import avoided to keep bootstrap self-contained.
     const listeners = new Map();
 
     return {
@@ -60,6 +77,11 @@ export function createGameBootstrap({ canvas, scene, camera, container }) {
 
   wire();
 
+  function createAsset(assetId) {
+    if (!assets) return null;
+    return assets[assetId]?.() || null;
+  }
+
   function update(deltaTime) {
     const metrics = render.update(deltaTime);
     monitoring.trackPerformance(metrics?.averageFrameMs || 0);
@@ -71,6 +93,7 @@ export function createGameBootstrap({ canvas, scene, camera, container }) {
     hud.dispose();
     phone.dispose();
     interaction.dispose();
+    design?.dispose();
   }
 
   return {
@@ -82,6 +105,10 @@ export function createGameBootstrap({ canvas, scene, camera, container }) {
     hud,
     phone,
     interaction,
+    features,
+    design,
+    assets,
+    createAsset,
     update,
     dispose
   };
