@@ -7,12 +7,13 @@ import { createRenderFoundation } from './renderBridge.js';
 import { createMonitoring } from './monitoring.js';
 import { createFeedbackSystem } from './feedback.js';
 import { createColdCargoCampaign } from '../story/coldCargo.js';
-import { createPhone } from '../ui/phone.js';
+import { createPhone } from '../ui/phone.mjs';
 import { createHUD } from '../ui/hud.js';
 import { createInteractionSystem } from '../ui/interaction.js';
-import { createGameAssetLibrary } from '../assets/proceduralAssets.js';
-import { createDesignSystem } from '../design/designSystem.js';
-import { createFeatureRegistry } from '../features/featureRegistry.js';
+import { createGameAssetLibrary } from '../assets/proceduralAssets.mjs';
+import { createDesignSystem } from '../design/designSystem.mjs';
+import { createFeatureRegistry } from '../features/featureRegistry.mjs';
+import { bindAssetsToUIAndWorld } from './assetBinding.mjs';
 
 export function createGameBootstrap({
   canvas,
@@ -29,16 +30,23 @@ export function createGameBootstrap({
   const render = createRenderFoundation({ canvas, scene, camera });
   const campaign = createColdCargoCampaign();
   const hud = createHUD({ container });
-  const phone = createPhone({ container });
-  const interaction = createInteractionSystem({ container });
-
-  const design = features.isEnabled('design.system')
-    ? createDesignSystem({ root: document.body })
-    : null;
 
   const assets = features.isEnabled('assets.procedural')
     ? createGameAssetLibrary()
     : null;
+
+  const phone = createPhone({ container, assets });
+  const interaction = createInteractionSystem({ container });
+
+  const design = features.isEnabled('design.system')
+    ? createDesignSystem()
+    : null;
+
+  const assetBinding = bindAssetsToUIAndWorld({
+    phone,
+    scene,
+    assets
+  });
 
   function createEventBusSafe() {
     const listeners = new Map();
@@ -89,6 +97,7 @@ export function createGameBootstrap({
   }
 
   function dispose() {
+    assetBinding.dispose();
     render.dispose();
     hud.dispose();
     phone.dispose();
@@ -108,6 +117,7 @@ export function createGameBootstrap({
     features,
     design,
     assets,
+    assetBinding,
     createAsset,
     update,
     dispose
