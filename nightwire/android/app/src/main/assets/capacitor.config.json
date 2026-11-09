@@ -2,11 +2,17 @@
 	"appId": "de.nightwire.district",
 	"appName": "NIGHTWIRE",
 	"webDir": "dist",
+	"loggingBehavior": "debug",
+	"backgroundColor": "#07080c",
 	"android": {
 		"allowMixedContent": false,
-		"backgroundColor": "#07080c"
+		"backgroundColor": "#07080c",
+		"captureInput": false,
+		"webContentsDebuggingEnabled": false,
+		"initialFocus": true
 	},
 	"server": {
-		"androidScheme": "https"
+		"androidScheme": "https",
+		"hostname": "localhost"
 	}
 }

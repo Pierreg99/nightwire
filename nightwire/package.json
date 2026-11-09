@@ -2,6 +2,8 @@
   "name": "nightwire",
   "productName": "NIGHTWIRE",
   "description": "NIGHTWIRE: tactical FPS night-city vertical slice (Three.js)",
+  "homepage": "https://github.com/Pierreg99/nightwire",
+  "desktopName": "nightwire.desktop",
   "author": "NIGHTWIRE",
   "private": true,
   "version": "2.0.1",
@@ -21,19 +23,19 @@
     "apk:release": "node scripts/apk.mjs release",
     "aab": "node scripts/apk.mjs bundle",
     "exe": "node scripts/desktop.mjs win",
+    "exe:setup": "node scripts/desktop.mjs win-setup",
     "linux": "node scripts/desktop.mjs linux",
     "appimage": "node scripts/desktop.mjs appimage",
     "deb": "node scripts/desktop.mjs deb"
   },
-  "dependencies": {
-    "three": "0.170.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@capacitor/android": "8.6.0",
     "@capacitor/cli": "8.6.0",
     "@capacitor/core": "8.6.0",
     "electron": "45.2.3",
     "electron-builder": "26.18.0",
+    "three": "0.170.0",
     "vite": "^6.4.1"
   }
 }

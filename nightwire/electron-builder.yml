@@ -1,0 +1,63 @@
+# NIGHTWIRE desktop packaging (electron-builder). Output goes to release/, never to dist/ (that is the web build).
+appId: de.nightwire.district
+productName: NIGHTWIRE
+copyright: NIGHTWIRE
+artifactName: "nightwire-${version}-${os}-${arch}.${ext}"
+directories:
+  output: release
+  buildResources: electron
+files:
+  - electron/main.cjs
+  - electron/preload.cjs
+  - electron/icon.png
+  - dist/**/*
+  - "!dist/**/*.map"
+  - package.json
+asar: true
+compression: normal
+electronLanguages: [en-US, de]
+
+win:
+  icon: electron/icon.png
+  target:
+    - target: portable
+      arch: [x64]
+    - target: zip
+      arch: [x64]
+  # No Authenticode certificate in this repo. Signing and resource editing stay off so Linux CI
+  # can build Windows targets without wine. Set CSC_LINK / CSC_KEY_PASSWORD and flip this on to sign.
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: NIGHTWIRE
+  artifactName: "nightwire-${version}-win-${arch}-setup.${ext}"
+portable:
+  artifactName: "nightwire-${version}-win-${arch}-portable.${ext}"
+# NSIS setup.exe: electron-builder runs the installer once to extract the uninstaller, so on Linux it
+# needs wine. Build it on Windows (or a Linux box with wine) with: npm run exe:setup
+
+linux:
+  icon: electron/icon.png
+  category: Game
+  synopsis: Tactical FPS night-city slice
+  description: NIGHTWIRE is a Three.js tactical FPS vertical slice set in a rain-soaked night city.
+  maintainer: NIGHTWIRE <nightwire@users.noreply.github.com>
+  executableName: nightwire
+  syncDesktopName: true
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+  desktop:
+    entry:
+      Name: NIGHTWIRE
+      Comment: Tactical FPS night-city slice
+      Categories: Game;ActionGame;
+      StartupWMClass: nightwire
+deb:
+  packageCategory: games
+  priority: optional
