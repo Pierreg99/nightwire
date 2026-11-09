@@ -3,8 +3,8 @@
  * Wires render, combat, mission, phone, assets, design and features.
  */
 
-import { createRenderFoundation } from './renderBridge.js';
-import { createMonitoring } from './monitoring.js';
+import { createRenderFoundation } from './renderBridge.mjs';
+import { createMonitoring } from './monitoring.mjs';
 import { createFeedbackSystem } from './feedback.js';
 import { createColdCargoCampaign } from '../story/coldCargo.js';
 import { createPhone } from '../ui/phone.mjs';
