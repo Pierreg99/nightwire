@@ -2,45 +2,27 @@
 
 ## Purpose
 
-This pass deploys NIGHTWIRE to a VPS and verifies the live URL.
+This pass deploys the NIGHTWIRE vertical slice and verifies the live URL.
 
-It adds a deployment script, live health check and deployment checklist.
+It runs the release, bundle, deployment and live check steps.
 
-## Modules
+## Deployment steps
 
-- scripts/deploy.sh: builds and deploys the production bundle to a VPS
-- scripts/liveCheck.js: verifies the live URL returns a valid HTML response
-
-## Deployment
-
-Set environment variables:
-
-- DEPLOY_HOST
-- DEPLOY_USER
-- DEPLOY_DIR
-
-Run:
-
+- chmod +x scripts/release.sh
+- ./scripts/release.sh v1.0.0
+- chmod +x scripts/bundle.sh
+- ./scripts/bundle.sh 1.0.0
 - chmod +x scripts/deploy.sh
-- DEPLOY_HOST=your-server ./scripts/deploy.sh
+- ./scripts/deploy.sh
 
 ## Live check
 
-Run:
-
-- node scripts/liveCheck.js https://your-domain
-
-This verifies the live URL returns a valid HTML response.
-
-## Deployment checklist
-
-- Build production bundle.
-- Deploy to VPS.
-- Run live check.
-- Verify no console errors.
-- Verify performance target.
-- Monitor feedback.
+- Verify the live URL returns HTTP 200.
+- Verify the game loads without console errors.
+- Verify the mission starts.
+- Verify the extraction completes.
+- Verify settings persist.
 
 ## Next step
 
-Monitor frame time, errors and user feedback after deployment.
+Monitor feedback and fix the five worst breaks before the next release.
