@@ -5,8 +5,8 @@
 
 import { createRenderFoundation } from './renderBridge.mjs';
 import { createMonitoring } from './monitoring.mjs';
-import { createFeedbackSystem } from './feedback.js';
-import { createColdCargoCampaign } from '../story/coldCargo.js';
+import { createFeedbackSystem } from './feedback.mjs';
+import { createColdCargoCampaign } from '../story/coldCargo.mjs';
 import { createPhone } from '../ui/phone.mjs';
 import { createHUD } from '../ui/hud.js';
 import { createInteractionSystem } from '../ui/interaction.js';
