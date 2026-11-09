@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { PostFX } from './PostFX.js';
+import { createAdaptiveScale } from '../core/Quality.js';
 
 export function frameSize() {
   const vv = globalThis.visualViewport;
@@ -43,10 +44,22 @@ export class RenderPipeline {
     this.renderer.setPixelRatio(this._dpr(profile));
     this.renderer.setSize(w, h, false);
     this.post = null;
+    this.adaptive = createAdaptiveScale(profile, 30);
   }
 
   _dpr(profile) {
-    return Math.min(globalThis.devicePixelRatio || 1, profile.dpr);
+    const base = Math.min(globalThis.devicePixelRatio || 1, profile.dpr);
+    return Math.max(0.5, base * (this.adaptive?.scale ?? 1));
+  }
+
+  /** Per-frame hook. On adaptive presets it lowers / restores the render scale; returns true on change. */
+  adapt(dt, camera) {
+    if (!this.profile?.adaptive) return false;
+    const before = this.adaptive.scale;
+    if (this.adaptive.update(dt) === before) return false;
+    this.renderer.setPixelRatio(this._dpr(this.profile));
+    this.resize(camera);
+    return true;
   }
 
   attachPost(game) {
@@ -67,6 +80,7 @@ export class RenderPipeline {
 
   apply(profile, { moon, scene, hemi, camera }) {
     this.profile = profile;
+    this.adaptive = createAdaptiveScale(profile, 30);
     const dpr = this._dpr(profile);
     this.renderer.setPixelRatio(dpr);
     this.renderer.shadowMap.enabled = profile.shadow > 0;

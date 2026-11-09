@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Time } from './Time.js';
-import { Input } from './Input.js';
+import { Input, lockPointer } from './Input.js';
 import { loadSettings, saveSettings } from './Settings.js';
 import { detectEnv, resolveProfile, applyLightBudget } from './Quality.js';
 import { Bus } from './math.js';
@@ -131,7 +131,7 @@ export class Game {
   _bindUi() {
     document.getElementById('btn-jack').onclick = () => this.jackIn();
     this.canvas.addEventListener('click', () => {
-      if (this.mode === 'play' && !this.input.blocked) this.canvas.requestPointerLock();
+      if (this.mode === 'play' && !this.input.blocked) lockPointer(this.canvas);
     });
     addEventListener('keydown', (e) => {
       if (this.mode === 'title') return;
@@ -158,6 +158,16 @@ export class Game {
       if (e.code === 'Backquote' && this.mode === 'play') this.cycleQuality();
       if (e.code === 'KeyM' && this.mode === 'play') { this.phone.open(); this.phone.showApp('map'); }
     });
+    // Android home button, alt-tab, minimise: release held inputs, pause, mute.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) return;
+      this.touch?.releaseAll();
+      this.input.keys.clear();
+      this.input.fire = false;
+      this.input.ads = false;
+      if (this.mode === 'play') this.pause.open();
+      this.audio?.ctx?.suspend?.().catch?.(() => {});
+    });
     if (window.DeviceOrientationEvent) {
       addEventListener('deviceorientation', (e) => {
         if (!this.settings.gyro || this.input.blocked) return;
@@ -176,7 +186,7 @@ export class Game {
     requestStage();
     this.mode = 'play';
     this.input.blocked = false;
-    this.canvas.requestPointerLock();
+    lockPointer(this.canvas);
     this.story.boot();
   }
 
@@ -324,6 +334,10 @@ export class Game {
     this.skinEditor.renderPreview();
     this.moon.position.set(this.player.pos.x - 40, 50, this.player.pos.z + 18);
 
+    if (this.mode === 'play' && this.gfx.adapt(dt, this.camera)) {
+      const el = document.getElementById('quality-readout');
+      if (el) el.textContent = `${this.qualityProfile.label} · ${this.renderer.getPixelRatio().toFixed(2)}× adaptive`;
+    }
     if (this.mode === 'play' || this.mode === 'phone' || this.mode === 'pause') this.post.render(dt);
     this.input.flushPresses();
   }

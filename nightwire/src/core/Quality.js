@@ -21,6 +21,13 @@ export const PROFILES = {
     hemi: 0.7,
     envScale: 1.2,
     clearcoatScale: 1.12,
+    bloomScale: 1,
+    chroma: 0.0016,
+    lensRain: 0.55,
+    splitTone: 0.12,
+    adaptive: false,
+    minScale: 1,
+    rainStreak: 0.42,
   },
   high: {
     id: 'high',
@@ -44,6 +51,13 @@ export const PROFILES = {
     hemi: 0.64,
     envScale: 1.05,
     clearcoatScale: 1,
+    bloomScale: 1,
+    chroma: 0.0011,
+    lensRain: 0.4,
+    splitTone: 0.1,
+    adaptive: false,
+    minScale: 1,
+    rainStreak: 0.36,
   },
   medium: {
     id: 'medium',
@@ -67,6 +81,13 @@ export const PROFILES = {
     hemi: 0.62,
     envScale: 1,
     clearcoatScale: 1,
+    bloomScale: 0.75,
+    chroma: 0,
+    lensRain: 0,
+    splitTone: 0.08,
+    adaptive: true,
+    minScale: 0.7,
+    rainStreak: 0.3,
   },
   mobile: {
     id: 'mobile',
@@ -90,6 +111,13 @@ export const PROFILES = {
     hemi: 0.7,
     envScale: 0.85,
     clearcoatScale: 0.8,
+    bloomScale: 0.5,
+    chroma: 0,
+    lensRain: 0,
+    splitTone: 0.06,
+    adaptive: true,
+    minScale: 0.6,
+    rainStreak: 0.24,
   },
 };
 
@@ -101,12 +129,16 @@ export function detectEnv(root = globalThis) {
     coarse = !!root.matchMedia?.('(pointer: coarse)')?.matches;
   } catch { /* node tests */ }
   const search = root.location?.search || '';
-  const apk = /; wv\)|NightwireAPK|Capacitor/i.test(ua) || /(?:\?|&)apk=1(?:&|$)/.test(search);
+  let nativeApp = false;
+  try { nativeApp = !!root.Capacitor?.isNativePlatform?.(); } catch { /* not in Capacitor */ }
+  const apk = nativeApp || /; wv\)|NightwireAPK|Capacitor/i.test(ua) || /(?:\?|&)apk=1(?:&|$)/.test(search);
+  // Electron desktop shell (Windows / Linux package) is always a desktop target, even on touch laptops.
+  const desktopShell = !!root.nightwireNative || /Electron\//.test(ua);
   const cores = nav?.hardwareConcurrency || 4;
   const mem = nav?.deviceMemory || 4;
-  const mobile = coarse || apk || /Android|iPhone|iPad/i.test(ua);
+  const mobile = !desktopShell && (coarse || apk || /Android|iPhone|iPad/i.test(ua));
   const strong = cores >= 8 && mem >= 6;
-  return { mobile, apk, strong, cores, mem };
+  return { mobile, apk: apk && !desktopShell, desktopShell, strong, cores, mem };
 }
 
 /** reducedFx always caps to the mobile profile. Explicit picks beat auto. Desktop auto is ULTRA. */
@@ -116,6 +148,36 @@ export function resolveProfile(settings, env) {
   if (choice !== 'auto' && PROFILES[choice]) return PROFILES[choice];
   if (env?.mobile) return env.strong ? PROFILES.high : PROFILES.mobile;
   return PROFILES.ultra;
+}
+
+/**
+ * Adaptive render scale for presets with `adaptive: true` (MEDIUM, MOBILE / APK).
+ * Feed it frame times; it returns the scale to multiply into the pixel ratio.
+ * Drops 0.1 after ~1.5 s above the budget, climbs 0.05 after ~4 s well below it.
+ */
+export function createAdaptiveScale(profile, targetFps = 30) {
+  const state = { scale: 1, avg: 1000 / 60, slow: 0, fast: 0 };
+  const budget = 1000 / targetFps;
+  return {
+    get scale() { return state.scale; },
+    reset() { state.scale = 1; state.slow = state.fast = 0; },
+    update(dtSeconds) {
+      if (!profile?.adaptive) return 1;
+      const ms = Math.min(250, Math.max(1, dtSeconds * 1000));
+      state.avg += (ms - state.avg) * 0.08;
+      if (state.avg > budget * 1.08) { state.slow += dtSeconds; state.fast = 0; }
+      else if (state.avg < budget * 0.7) { state.fast += dtSeconds; state.slow = 0; }
+      else { state.slow = state.fast = 0; }
+      if (state.slow > 1.5 && state.scale > profile.minScale) {
+        state.scale = Math.max(profile.minScale, +(state.scale - 0.1).toFixed(2));
+        state.slow = 0;
+      } else if (state.fast > 4 && state.scale < 1) {
+        state.scale = Math.min(1, +(state.scale + 0.05).toFixed(2));
+        state.fast = 0;
+      }
+      return state.scale;
+    },
+  };
 }
 
 /** Landmark lights stay on. The rest fill by distance, up to `max`. Authored intensity is restored, never destroyed. */
