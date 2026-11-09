@@ -26,6 +26,19 @@ NIGHTWIRE v2.0.0 consolidates the Machala foundation into a playable vertical sl
 - **Interface** — objective HUD, phone, interaction prompts, settings, accessibility and mobile controls.
 - **Release** — build scripts, Docker deployment, live checks, observability and feedback iteration.
 
+## Viewable game assets
+
+| Asset | View |
+|---|---|
+| Night-city dock street | [View asset](nightwire/assets/dock-street.png) |
+| Warehouse 09 | [View asset](nightwire/assets/warehouse-09.png) |
+| Apartment 4B safehouse | [View asset](nightwire/assets/apartment-4b.png) |
+| Dock boat extraction | [View asset](nightwire/assets/dock-boat.png) |
+| Weapon render: pistol | [View asset](nightwire/assets/weapon-pistol.png) |
+| Weapon render: SMG | [View asset](nightwire/assets/weapon-smg.png) |
+| Enemy tactical unit | [View asset](nightwire/assets/enemy-tactical.png) |
+| Phone interface | [View asset](nightwire/assets/phone-ui.png) |
+
 ## Mission flow
 
 1. Start the Cold Cargo mission.
@@ -45,6 +58,7 @@ nightwire/
 │   ├── story/
 │   ├── ui/
 │   └── world/
+├── assets/
 ├── docs/
 └── scripts/
 ```
