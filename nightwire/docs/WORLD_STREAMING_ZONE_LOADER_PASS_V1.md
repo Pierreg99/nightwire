@@ -2,28 +2,28 @@
 
 ## Purpose
 
-This pass adds zone streaming to NIGHTWIRE.
+This pass adds world streaming and zone loading.
 
-It loads zones near the player and unloads zones that are far away.
+It loads zones based on player distance and activates them dynamically.
 
 ## Modules
 
-- zoneLoader.js: zone loading and unloading
+- zoneLoader.js: zone loading
 - streamingManager.js: distance-based activation
 
-## Streaming rules
+## Zone loader
 
-- Load zones within 70 units.
-- Unload zones beyond 95 units.
-- Keep a buffer between load and unload distance.
-- Only load zones that are needed.
+- Loads zone definitions.
+- Loads zone assets.
+- Loads zone props.
 
-## Integration
+## Streaming manager
 
-Import createStreamingManager and pass a list of zones.
-
-Call update with the player position each frame.
+- Tracks player position.
+- Calculates zone distance.
+- Activates zones within range.
+- Deactivates zones outside range.
 
 ## Next step
 
-Connect zones to mission objectives and enemy spawning.
+Create the Mission Streaming & Spawn Pass v1.
