@@ -3,8 +3,8 @@
  * Cold open, intercept, heat and extraction.
  */
 
-import { createObjectiveSystem } from './objectives.js';
-import { createMissionManager } from './missionManager.js';
+import { createObjectiveSystem } from './objectives.mjs';
+import { createMissionManager } from './missionManager.mjs';
 
 export function createColdCargoCampaign() {
   const objectives = createObjectiveSystem();

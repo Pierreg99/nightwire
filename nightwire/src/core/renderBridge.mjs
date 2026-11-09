@@ -3,11 +3,11 @@
  * Connects quality, renderer, post-processing, lighting and performance guard.
  */
 
-import { createQualitySystem } from '../render/quality.js';
-import { createRenderer } from '../render/renderer.js';
-import { createPostFX } from '../render/postfx.js';
-import { createLighting } from '../render/lighting.js';
-import { createPerformanceGuard } from '../render/performance.js';
+import { createQualitySystem } from '../render/quality.mjs';
+import { createRenderer } from '../render/renderer.mjs';
+import { createPostFX } from '../render/postfx.mjs';
+import { createLighting } from '../render/lighting.mjs';
+import { createPerformanceGuard } from '../render/performance.mjs';
 
 export function createRenderFoundation({ canvas, scene, camera, initialTier }) {
   const quality = createQualitySystem({ initialTier });
