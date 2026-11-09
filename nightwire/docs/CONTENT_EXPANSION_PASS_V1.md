@@ -2,41 +2,37 @@
 
 ## Purpose
 
-This pass expands the NIGHTWIRE content pool.
+This pass expands the NIGHTWIRE vertical slice with additional content.
 
-It adds missions, weapons, NPC variants and zones.
+It adds missions, weapons, NPCs and zones.
 
-## Missions
+## New content
 
-- Cold Cargo
-- Dockside Debt
-- Neon Run
-- Tower Watch
+- Two additional missions.
+- Two additional weapons.
+- Two additional NPC variants.
+- Two additional zones.
 
-## Weapons
+## Mission additions
 
-- Shotgun
-- DMR
+- Dockside Deal.
+- Cold Run.
 
-## NPC variants
+## Weapon additions
 
-- Civilian
-- Crew
-- Security
-- Street
+- Compact SMG.
+- Heavy Pistol.
 
-## Zones
+## NPC additions
 
-- Dock District
-- Neon Strip
-- Plattenbau Courtyard
-- Transit Tunnel
-- Industrial Yard
+- Dock Worker.
+- Street Informant.
 
-## Integration
+## Zone additions
 
-Import the content registry modules and use them to spawn missions, weapons, NPCs and zones.
+- Container Yard.
+- Riverside Alley.
 
 ## Next step
 
-Connect the new content to the mission manager, enemy AI and world streaming.
+Create the World Streaming & Zone Loader Pass v1.
