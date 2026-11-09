@@ -5,7 +5,7 @@
 
 import * as THREE from 'three';
 import { makeFacade } from './textures.mjs';
-import { wetAsphaltMaterial } from '../fx/wetAsphalt.js';
+import { wetAsphaltMaterial } from '../fx/wetAsphalt.mjs';
 
 export function mat(tex, opts = {}) {
   return new THREE.MeshStandardMaterial({

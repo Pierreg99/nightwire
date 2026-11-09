@@ -4,16 +4,16 @@
  */
 
 import * as THREE from 'three';
-import { LOOK } from '../fx/look.js';
+import { LOOK } from '../fx/look.mjs';
 
-function canvas(size = 512) {
-  const element = document.createElement('canvas');
-  element.width = size;
-  element.height = size;
-  return [element, element.getContext('2d')];
+function createCanvas(size = 512) {
+  const canvasElement = document.createElement('canvas');
+  canvasElement.width = size;
+  canvasElement.height = size;
+  return [canvasElement, canvasElement.getContext('2d')];
 }
 
-function noise(context, count, color, size) {
+function addNoise(context, count, color, size) {
   for (let index = 0; index < count; index += 1) {
     context.fillStyle = color(Math.random());
     context.fillRect(
@@ -25,7 +25,7 @@ function noise(context, count, color, size) {
   }
 }
 
-function texture(canvasElement, repeat = 1) {
+function createTexture(canvasElement, repeat = 1) {
   const texture = new THREE.CanvasTexture(canvasElement);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.wrapS = THREE.RepeatWrapping;
@@ -48,10 +48,10 @@ function hydrate(target, url) {
 }
 
 export function makeAsphalt() {
-  const [canvasElement, context] = canvas(1024);
+  const [canvasElement, context] = createCanvas(1024);
   context.fillStyle = '#14161c';
   context.fillRect(0, 0, 512, 512);
-  noise(context, 24000, (value) => `rgba(${30 + value * 40},${30 + value * 38},${34 + value * 40},0.45)`, 1024);
+  addNoise(context, 24000, (value) => `rgba(${30 + value * 40},${30 + value * 38},${34 + value * 40},0.45)`, 1024);
 
   context.strokeStyle = 'rgba(200,200,180,0.18)';
   context.lineWidth = 12;
@@ -67,14 +67,14 @@ export function makeAsphalt() {
   context.lineTo(512, 1024);
   context.stroke();
 
-  return hydrate(texture(canvasElement, 8), '/assets/tex/asphalt.jpg');
+  return hydrate(createTexture(canvasElement, 8), '/assets/tex/asphalt.jpg');
 }
 
 export function makeConcrete() {
-  const [canvasElement, context] = canvas(1024);
+  const [canvasElement, context] = createCanvas(1024);
   context.fillStyle = '#2a2d32';
   context.fillRect(0, 0, 1024, 1024);
-  noise(context, 18000, (value) => `rgba(${70 + value * 50},${72 + value * 48},${74 + value * 46},0.4)`, 1024);
+  addNoise(context, 18000, (value) => `rgba(${70 + value * 50},${72 + value * 48},${74 + value * 46},0.4)`, 1024);
 
   context.strokeStyle = 'rgba(0,0,0,0.25)';
   for (let index = 0; index < 16; index += 1) {
@@ -84,11 +84,11 @@ export function makeConcrete() {
     context.stroke();
   }
 
-  return hydrate(texture(canvasElement, 4), '/assets/tex/concrete.jpg');
+  return hydrate(createTexture(canvasElement, 4), '/assets/tex/concrete.jpg');
 }
 
 export function makeMetal(hue = '#3a4248') {
-  const [canvasElement, context] = canvas(256);
+  const [canvasElement, context] = createCanvas(256);
   context.fillStyle = hue;
   context.fillRect(0, 0, 256, 256);
 
@@ -97,8 +97,8 @@ export function makeMetal(hue = '#3a4248') {
     context.fillRect(0, y, 256, 3);
   }
 
-  noise(context, 1200, (value) => `rgba(20,20,20,${0.2 + value * 0.2})`, 256);
-  return texture(canvasElement, 2);
+  addNoise(context, 1200, (value) => `rgba(20,20,20,${0.2 + value * 0.2})`, 256);
+  return createTexture(canvasElement, 2);
 }
 
 export function makeContainer() {
@@ -108,7 +108,7 @@ export function makeContainer() {
 }
 
 export function makeFacade(seed, floors, bays, wall, lit) {
-  const [canvasElement, context] = canvas(1024);
+  const [canvasElement, context] = createCanvas(1024);
   const emissiveCanvas = document.createElement('canvas');
   emissiveCanvas.width = 1024;
   emissiveCanvas.height = 1024;
@@ -151,13 +151,13 @@ export function makeFacade(seed, floors, bays, wall, lit) {
   emissiveContext.fillStyle = lit;
   emissiveContext.fillRect(0, 1004, 1024, 12);
 
-  const map = texture(canvasElement, 1);
-  map.userData.emissiveMap = texture(emissiveCanvas, 1);
+  const map = createTexture(canvasElement, 1);
+  map.userData.emissiveMap = createTexture(emissiveCanvas, 1);
   return map;
 }
 
 export function makeNeon(text, color) {
-  const [canvasElement, context] = canvas(512);
+  const [canvasElement, context] = createCanvas(512);
   context.fillStyle = '#05060a';
   context.fillRect(0, 0, 512, 512);
   context.font = '700 72px Arial Narrow, Arial, sans-serif';
@@ -172,7 +172,7 @@ export function makeNeon(text, color) {
     context.fillText(line, 256, 256 + (index - (lines.length - 1) / 2) * 78);
   });
 
-  const texture = texture(canvasElement, 1);
+  const texture = createTexture(canvasElement, 1);
   texture.repeat.set(1, 1);
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
@@ -180,7 +180,7 @@ export function makeNeon(text, color) {
 }
 
 export function makePortrait(name) {
-  const [canvasElement, context] = canvas(256);
+  const [canvasElement, context] = createCanvas(256);
   const gradient = context.createLinearGradient(0, 0, 256, 256);
   gradient.addColorStop(0, '#102028');
   gradient.addColorStop(1, '#1a0c14');
@@ -217,7 +217,7 @@ export function makePortrait(name) {
 }
 
 export function makePuddle() {
-  const [canvasElement, context] = canvas(128);
+  const [canvasElement, context] = createCanvas(128);
   const gradient = context.createRadialGradient(64, 64, 10, 64, 64, 64);
   gradient.addColorStop(0, 'rgba(40,60,80,0.85)');
   gradient.addColorStop(1, 'rgba(10,12,16,0)');
@@ -225,7 +225,7 @@ export function makePuddle() {
   context.fillStyle = gradient;
   context.fillRect(0, 0, 128, 128);
 
-  const texture = texture(canvasElement, 1);
+  const texture = createTexture(canvasElement, 1);
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
   return texture;
@@ -238,7 +238,7 @@ export function makeBrick() {
 }
 
 export function makePlatten() {
-  const [canvasElement, context] = canvas(1024);
+  const [canvasElement, context] = createCanvas(1024);
   context.fillStyle = '#6a6e72';
   context.fillRect(0, 0, 1024, 1024);
   context.strokeStyle = 'rgba(20,20,22,0.45)';
@@ -258,8 +258,8 @@ export function makePlatten() {
     context.stroke();
   }
 
-  noise(context, 12000, (value) => `rgba(90,90,80,${value * 0.3})`, 1024);
-  return hydrate(texture(canvasElement, 2), '/assets/tex/platten.jpg');
+  addNoise(context, 12000, (value) => `rgba(90,90,80,${value * 0.3})`, 1024);
+  return hydrate(createTexture(canvasElement, 2), '/assets/tex/platten.jpg');
 }
 
 export function makeNightEnv() {
@@ -300,7 +300,7 @@ export function makeNightEnv() {
 }
 
 export function makeGlow(color = '#3ee0ff') {
-  const [canvasElement, context] = canvas(64);
+  const [canvasElement, context] = createCanvas(64);
   const gradient = context.createRadialGradient(32, 32, 2, 32, 32, 32);
   gradient.addColorStop(0, color);
   gradient.addColorStop(0.35, color);
