@@ -1,116 +1,101 @@
-/**
- * Machala HUD, Phone & Interaction Pass v1
- * Phone shell with jobs, map blips, radio and messages.
- */
+import { nowClock } from '../core/math.js';
 
-export function createPhone({ container }) {
-  const root = document.createElement('div');
-  root.className = 'nightwire-phone';
-  root.style.cssText = 'position:absolute;right:18px;bottom:18px;width:280px;height:420px;background:rgba(8,11,16,0.92);border:1px solid rgba(80,180,220,0.35);border-radius:18px;padding:14px;color:#e8f4ff;font-family:system-ui,sans-serif;display:none;z-index:30';
+export class Phone {
+  constructor(game) {
+    this.game = game;
+    this.el = document.getElementById('phone');
+    this.home = document.getElementById('phone-home');
+    this.app = document.getElementById('phone-app');
+    this.back = document.getElementById('phone-back');
+    this.clock = document.getElementById('phone-clock');
+    this.openState = false;
+    this.unread = true;
+    this.home.querySelectorAll('button[data-app]').forEach((b) => {
+      b.onclick = () => this.showApp(b.dataset.app);
+    });
+    this.back.onclick = () => this.showHome();
+  }
 
-  const tabs = ['Jobs', 'Map', 'Radio', 'Messages'];
-  const content = document.createElement('div');
-  content.style.cssText = 'height:calc(100% - 42px);overflow:auto;font-size:12px;line-height:1.45';
+  toggle() {
+    if (this.openState) this.close();
+    else this.open();
+  }
 
-  const tabBar = document.createElement('div');
-  tabBar.style.cssText = 'display:flex;gap:8px;margin-bottom:10px';
+  open() {
+    this.openState = true;
+    this.game.mode = 'phone';
+    this.game.input.blocked = true;
+    document.exitPointerLock();
+    this.el.classList.remove('hidden');
+    this.showHome();
+    this.game.audio?.ui();
+  }
 
-  const messages = [];
-  const jobs = [];
-  const blips = [];
-
-  function setTab(name) {
-    content.innerHTML = '';
-
-    if (name === 'Jobs') {
-      jobs.forEach((job) => {
-        const item = document.createElement('div');
-        item.textContent = job.title + ' - ' + job.status;
-        item.style.cssText = 'padding:8px;border-bottom:1px solid rgba(80,180,220,0.15)';
-        content.appendChild(item);
-      });
-    }
-
-    if (name === 'Map') {
-      blips.forEach((blip) => {
-        const item = document.createElement('div');
-        item.textContent = blip.label;
-        item.style.cssText = 'padding:8px;border-bottom:1px solid rgba(80,180,220,0.15)';
-        content.appendChild(item);
-      });
-    }
-
-    if (name === 'Radio') {
-      ['Dark Synth', 'Late Night Talk'].forEach((station) => {
-        const item = document.createElement('div');
-        item.textContent = station;
-        item.style.cssText = 'padding:8px;border-bottom:1px solid rgba(80,180,220,0.15)';
-        content.appendChild(item);
-      });
-    }
-
-    if (name === 'Messages') {
-      messages.forEach((message) => {
-        const item = document.createElement('div');
-        item.textContent = message;
-        item.style.cssText = 'padding:8px;border-bottom:1px solid rgba(80,180,220,0.15)';
-        content.appendChild(item);
-      });
+  close() {
+    this.openState = false;
+    this.el.classList.add('hidden');
+    this.game.skinEditor.closePreview();
+    if (this.game.mode === 'phone') {
+      this.game.mode = 'play';
+      this.game.input.blocked = false;
+      this.game.canvas.requestPointerLock();
     }
   }
 
-  tabs.forEach((tab) => {
-    const button = document.createElement('button');
-    button.textContent = tab;
-    button.style.cssText = 'flex:1;padding:6px 0;background:rgba(20,30,40,0.8);border:1px solid rgba(80,180,220,0.25);color:#e8f4ff;border-radius:8px;font-size:11px;cursor:pointer';
-    button.addEventListener('click', () => setTab(tab));
-    tabBar.appendChild(button);
-  });
-
-  root.append(tabBar, content);
-  container.appendChild(root);
-
-  function open() {
-    root.style.display = 'block';
-    setTab('Jobs');
+  showHome() {
+    this.home.classList.remove('hidden');
+    this.app.classList.add('hidden');
+    this.back.classList.add('hidden');
+    this.game.skinEditor.closePreview();
   }
 
-  function close() {
-    root.style.display = 'none';
+  showApp(name) {
+    this.home.classList.add('hidden');
+    this.app.classList.remove('hidden');
+    this.back.classList.remove('hidden');
+    this.game.audio?.ui();
+    const g = this.game;
+    if (name === 'jobs') {
+      this.app.innerHTML = `<h3>JOBS</h3>
+        <div class="job-card"><b>COLD CARGO · INTERCEPT</b><p>Warehouse 09. VIP package. KITE says don't work clean.</p>
+        <button id="job-accept">ACCEPT / TRACK</button></div>`;
+      this.app.querySelector('#job-accept').onclick = () => { g.story.accept(); this.close(); };
+    } else if (name === 'map') {
+      this.app.innerHTML = `<h3>DISTRICT</h3>
+        <p>Hafen · Neon-Strip · Plattenbau Hof</p>
+        <p>Blips: WH-09 · RHEINLICHT · BLOCK 17 · BOAT · 4B</p>
+        <div class="map-legend">You: ${g.world.zoneAt(g.player.pos.z)}</div>
+        <button id="open-skim">OPEN SKIM EDITOR</button>`;
+      this.app.querySelector('#open-skim').onclick = () => { this.close(); g.skim.open(); };
+    } else if (name === 'wardrobe') {
+      g.skinEditor.mount(this.app);
+    } else if (name === 'radio') {
+      this.app.innerHTML = `<h3>RADIO</h3>
+        <p>Station: ${g.audio.station === 0 ? 'DARK SYNTH FM' : 'LATE NIGHT TALK'}</p>
+        <button id="r0">DARK SYNTH FM</button>
+        <button id="r1">LATE NIGHT TALK</button>
+        <button id="r2">${g.audio.radioOn ? 'MUTE' : 'UNMUTE'}</button>`;
+      this.app.querySelector('#r0').onclick = () => { g.audio.setStation(0); this.showApp('radio'); };
+      this.app.querySelector('#r1').onclick = () => { g.audio.setStation(1); this.showApp('radio'); };
+      this.app.querySelector('#r2').onclick = () => { g.audio.toggleRadio(); this.showApp('radio'); };
+    } else if (name === 'messages') {
+      this.unread = false;
+      this.app.innerHTML = `<h3>MESSAGES</h3>
+        <div class="msg kite-row"><img src="/assets/tex/kite.jpg" alt="KITE" class="kite-pic" /><div><b>KITE</b><p>Wire. Package is sitting in Warehouse 09. Crew inside. Don't work clean.</p></div></div>
+        <div class="msg"><b>KITE</b><p>Extract is your call: Wohnung 4B or the dock boat. I only care that it leaves the district.</p></div>`;
+    } else if (name === 'settings') {
+      this.app.innerHTML = `<h3>SETTINGS</h3><p>Full settings live in Pause (ESC).</p><button id="to-pause">OPEN PAUSE</button>`;
+      this.app.querySelector('#to-pause').onclick = () => { this.close(); g.pause.open(); };
+    }
   }
 
-  function toggle() {
-    if (root.style.display === 'block') close();
-    else open();
+  update() {
+    this.clock.textContent = nowClock();
   }
 
-  function addJob(job) {
-    jobs.push(job);
-    setTab('Jobs');
+  buzz(text) {
+    this.game.audio?.phone();
+    this.game.hud.notify(text);
+    this.unread = true;
   }
-
-  function addBlip(blip) {
-    blips.push(blip);
-    setTab('Map');
-  }
-
-  function addMessage(message) {
-    messages.push(message);
-    setTab('Messages');
-  }
-
-  function dispose() {
-    root.remove();
-  }
-
-  return {
-    root,
-    open,
-    close,
-    toggle,
-    addJob,
-    addBlip,
-    addMessage,
-    dispose
-  };
 }

@@ -1,22 +1,39 @@
 {
   "name": "nightwire",
+  "productName": "NIGHTWIRE",
+  "description": "NIGHTWIRE: tactical FPS night-city vertical slice (Three.js)",
+  "author": "NIGHTWIRE",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.1",
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "node scripts/vite.mjs dev",
     "build": "node scripts/vite.mjs build",
     "preview": "node scripts/vite.mjs preview",
-    "apk": "node scripts/apk.mjs",
-    "deb": "node scripts/deb.mjs",
-    "exe": "node scripts/exe.mjs",
+    "test": "npm run test:quality && npm run test:layout && npm run test:builds",
     "test:quality": "node src/core/quality-selftest.mjs",
-    "test:layout": "node src/world/layout-selftest.mjs"
+    "test:layout": "node src/world/layout-selftest.mjs",
+    "test:builds": "node scripts/build-selftest.mjs",
+    "smoke": "node scripts/smoke-browser.mjs",
+    "electron": "npm run build && electron .",
+    "apk": "node scripts/apk.mjs debug",
+    "apk:release": "node scripts/apk.mjs release",
+    "aab": "node scripts/apk.mjs bundle",
+    "exe": "node scripts/desktop.mjs win",
+    "linux": "node scripts/desktop.mjs linux",
+    "appimage": "node scripts/desktop.mjs appimage",
+    "deb": "node scripts/desktop.mjs deb"
   },
   "dependencies": {
     "three": "0.170.0"
   },
   "devDependencies": {
-    "vite": "^6.0.3"
+    "@capacitor/android": "8.6.0",
+    "@capacitor/cli": "8.6.0",
+    "@capacitor/core": "8.6.0",
+    "electron": "45.2.3",
+    "electron-builder": "26.18.0",
+    "vite": "^6.4.1"
   }
 }
