@@ -42,7 +42,7 @@ Vite uses `node_modules` in this folder. If `~/.grok/nightwire-app/node_modules`
 | Horn (in vehicle) | H | — | — |
 | Drive | WASD | Left stick | Stick |
 
-Force the touch layout with **T** or Pause even on desktop.
+Force the touch layout with **T** or Pause even on desktop. Touch tracks every finger separately, so stick, look pad and FIRE work at the same time. If the browser refuses pointer lock, hold the left mouse button on the game view and drag to look.
 
 ## Editors
 
@@ -55,17 +55,22 @@ Beat 0 starts after the title (radio + phone job). Warehouse 09 intercept, heat,
 
 ## Graphics
 
-Pause → Graphics. **AUTO** on desktop is **ULTRA** (2× pixel ratio cap, 2048 shadows, full zone lights, wet asphalt shader, longer fog). **HIGH** is the 60 fps fallback (FXAA, denser fog). **MOBILE / APK** keeps the same district on a short fog budget. `` ` `` cycles the preset. Reduced FX forces the mobile profile.
+Pause → Graphics. **AUTO** on desktop is **ULTRA** (2× pixel ratio cap, 2048 shadows, full zone lights, wet asphalt shader, longer fog, rain on the lens, light chromatic edge, teal/sodium split tone). **HIGH** is the 60 fps fallback (FXAA, denser fog, same lens effects a little softer). **MEDIUM** and **MOBILE / APK** drop lens rain and chroma, render bloom at 3/4 and 1/2 resolution and lower the render scale on their own when the frame rate falls under 30 fps. Phones and the Android app resolve AUTO to MOBILE (HIGH on strong phones); the desktop app always counts as desktop. `` ` `` cycles the preset. Reduced FX forces the mobile profile.
 
 The three zones are one night with one light idea each: sodium on the harbor, magenta RHEINLICHT on the strip (cyan KAI LINE is emissive only), cold fluorescent on the hof. The strip lane is about 36 m between building faces.
 
 ## Packages
 
-`npm run apk` builds the web bundle, copies it into the Capacitor Android project (`de.nightwire.district`), and runs `gradlew assembleDebug` when `java` and `ANDROID_HOME` are set. The debug apk is `dist/nightwire-debug.apk`. If either tool is missing the command exits 1. It does not write a fake apk. `?apk=1` forces the phone quality path in a browser.
+Full guide: [docs/BUILDS.md](docs/BUILDS.md).
 
-`npm run deb` writes `dist/nightwire_1.0.0_all.deb` with `dpkg-deb`. It installs under `/usr/share/nightwire` and adds `/usr/bin/nightwire`, which serves the build on `127.0.0.1:41731` and opens a browser. It depends on `python3`.
+| Platform | Command | Output in `release/` |
+|---|---|---|
+| Android debug APK | `npm run apk` | `nightwire-<v>-debug.apk` |
+| Android release APK / AAB | `npm run apk:release` / `npm run aab` | `nightwire-<v>-release[-unsigned].apk/.aab` |
+| Windows x64 | `npm run exe` | portable `.exe` + `.zip` (`npm run exe:setup` for the NSIS installer, needs Windows or wine) |
+| Linux x64 | `npm run linux` | `.AppImage` + `.deb` |
 
-`npm run exe` tries a Windows x64 Electron folder at `dist/nightwire-win/nightwire.exe`. The exe needs the rest of that folder beside it. If Electron cannot be downloaded, the command exits 1 and does not rename another file to `.exe`.
+Android needs JDK 21 and the Android SDK; release signing comes only from environment variables. Desktop packages use an Electron shell (`electron/main.cjs`). Every script exits 1 with the reason if a tool is missing; none of them writes a fake package. `?apk=1` forces the phone quality path in a browser.
 
 ## Performance
 
