@@ -100,3 +100,10 @@ Ein Flatpak-Manifest liegt nicht im Repo und wurde nicht gebaut. Der übliche We
 - `F11` oder `Alt+Enter` schalten Vollbild um, `--fullscreen` oder `NIGHTWIRE_FULLSCREEN=1` startet im Vollbild.
 - Bildschirmschoner wird blockiert, solange das Fenster den Fokus hat. DevTools nur im Dev-Start oder mit `NIGHTWIRE_DEVTOOLS=1`.
 - Lokal ohne Paket starten: `npx install-electron` (einmal), dann `npm run electron`.
+
+## Hyperreal-Assets (Branch `hyperreal-assets`)
+
+`npm run smoke` wartet jetzt auf den Asset-Pass (`window.__nightwire.assetsReady`, max. 90 s, `--asset-wait ms`)
+und schlägt fehl, wenn eine Asset-Datei nicht lädt. `--query assets=0` prüft den prozeduralen Fallback,
+neue Shots: `--shot robot|walk|drone`. Der Electron-Smoke (`NIGHTWIRE_SMOKE=...`) meldet ebenfalls `[smoke] assets {...}`.
+Assets, Quellen und Lizenzen: `docs/ASSET-LICENSES.md`, Pipeline: `tools/asset-pipeline/README.md`.

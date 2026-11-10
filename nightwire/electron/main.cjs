@@ -121,6 +121,13 @@ function attachSmoke(w, shotPath) {
   w.webContents.once('did-finish-load', () => {
     setTimeout(async () => {
       try {
+        // hyperreal asset pass (app:// protocol): wait for it, report loaded / failed files
+        const assets = await w.webContents.executeJavaScript(`Promise.race([
+          (window.__nightwire?.assetsReady || Promise.resolve(null)).then((r) => JSON.stringify(r && { ...r, lib: undefined, failed: r.lib?.failed, loadErrors: r.lib?.errors })),
+          new Promise((r) => setTimeout(() => r('"timeout"'), 90000)),
+        ])`, true);
+        console.log(`[smoke] assets ${assets}`);
+        if (/timeout|"failed":[1-9]|"error"/.test(assets || '')) process.exitCode = 1;
         const state = await w.webContents.executeJavaScript(`(() => {
           document.getElementById('btn-jack')?.click();
           const gl = document.getElementById('c').getContext('webgl2');
