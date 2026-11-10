@@ -65,6 +65,8 @@ export class PauseMenu {
     applyTouchScale(s.touchButtonScale ?? 1);
     chk('set-fx', 'reducedFx', () => g.applyQuality());
     chk('set-motion', 'motion');
+    chk('set-mblur', 'motionBlur');
+    chk('set-dof', 'dof');
     chk('set-cb', 'colorblind');
     chk('set-touch', 'showTouch', (v) => g.touch.show(v));
     chk('set-gyro', 'gyro');

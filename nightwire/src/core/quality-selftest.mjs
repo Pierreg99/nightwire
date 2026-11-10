@@ -117,4 +117,11 @@ for (let i = 1; i < order.length; i++) {
   assert.ok(b.probeSize <= a.probeSize);
 }
 
-console.log('quality + pad + trigger + env + adaptive + immersive self-test ok');
+const SECOND = ['charDetail', 'ao', 'dof', 'motionBlur', 'dressing', 'skyline'];
+for (const p of Object.values(PROFILES)) for (const k of SECOND) assert.ok(p[k] !== undefined, `${p.id}.${k} missing`);
+assert.equal(PROFILES.mobile.ao, 0, 'MOBILE must not run GTAO');
+assert.equal(PROFILES.mobile.dof, false, 'MOBILE must not run DOF');
+assert.equal(PROFILES.mobile.motionBlur, 0, 'MOBILE must not run motion blur');
+assert.equal(PROFILES.mobile.charDetail, 0, 'MOBILE uses light character meshes');
+assert.ok(PROFILES.mobile.dressing < PROFILES.ultra.dressing && PROFILES.mobile.skyline < PROFILES.ultra.skyline);
+console.log('quality + pad + trigger + env + adaptive + immersive + second-pass self-test ok');

@@ -37,6 +37,13 @@ export const PROFILES = {
     rim: 0.42,
     impactParticles: 28,
     ambience: 1,
+    // second pass: humans, AO, DOF, motion blur, map dressing, skyline layers
+    charDetail: 1,
+    ao: 1,
+    dof: true,
+    motionBlur: 0.5,
+    dressing: 1,
+    skyline: 3,
   },
   high: {
     id: 'high',
@@ -76,6 +83,13 @@ export const PROFILES = {
     rim: 0.38,
     impactParticles: 20,
     ambience: 1,
+    // second pass: humans, AO, DOF, motion blur, map dressing, skyline layers
+    charDetail: 1,
+    ao: 1,
+    dof: true,
+    motionBlur: 0.35,
+    dressing: 1,
+    skyline: 3,
   },
   medium: {
     id: 'medium',
@@ -115,6 +129,13 @@ export const PROFILES = {
     rim: 0.32,
     impactParticles: 12,
     ambience: 1,
+    // second pass: humans, AO, DOF, motion blur, map dressing, skyline layers
+    charDetail: 1,
+    ao: 0,
+    dof: false,
+    motionBlur: 0,
+    dressing: 0.7,
+    skyline: 2,
   },
   mobile: {
     id: 'mobile',
@@ -154,6 +175,13 @@ export const PROFILES = {
     rim: 0.26,
     impactParticles: 6,
     ambience: 0.7,
+    // second pass: humans, AO, DOF, motion blur, map dressing, skyline layers
+    charDetail: 0,
+    ao: 0,
+    dof: false,
+    motionBlur: 0,
+    dressing: 0.45,
+    skyline: 1,
   },
 };
 

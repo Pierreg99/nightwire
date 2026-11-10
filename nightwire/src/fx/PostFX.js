@@ -4,6 +4,8 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { GTAOPass } from 'three/examples/jsm/postprocessing/GTAOPass.js';
+import { BokehPass } from 'three/examples/jsm/postprocessing/BokehPass.js';
 import { LOOK } from './look.mjs';
 
 // Linear grade. OutputPass is the only tone-map. Do not encode sRGB here.
@@ -21,6 +23,7 @@ const GradeShader = {
     splitTone: { value: 0 },
     hurt: { value: 0 },
     cvd: { value: 0 },
+    blurVel: { value: new THREE.Vector2() },
   },
   vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
   fragmentShader: `
@@ -35,6 +38,7 @@ const GradeShader = {
     uniform float splitTone;
     uniform float hurt;
     uniform float cvd;
+    uniform vec2 blurVel;
     varying vec2 vUv;
     // Daltonize (colour-vision setting): simulate the deficiency in LMS, push the lost contrast
     // into channels the viewer still separates. 1 deuteranopia, 2 protanopia, 3 tritanopia.
@@ -72,6 +76,18 @@ const GradeShader = {
       vec2 uv = vUv;
       if (lensRain > 0.0) uv += lensDrops(vUv, time) * lensRain * 0.06;
       vec3 c = texture2D(tDiffuse, uv).rgb;
+      if (dot(blurVel, blurVel) > 1e-7) {
+        // Camera motion blur: 6 taps along the rotation velocity, centre-weighted, edges stronger.
+        vec2 v = blurVel * (0.6 + distance(vUv, vec2(0.5)));
+        vec3 acc = c; float wsum = 1.0;
+        for (int i = 1; i <= 3; i++) {
+          float t = float(i) / 3.0; float w = 1.0 - t * 0.6;
+          acc += texture2D(tDiffuse, uv + v * t * 0.5).rgb * w;
+          acc += texture2D(tDiffuse, uv - v * t * 0.5).rgb * w;
+          wsum += 2.0 * w;
+        }
+        c = acc / wsum;
+      }
       if (chroma > 0.0) {
         vec2 dir = (uv - 0.5) * chroma * (0.4 + distance(uv, vec2(0.5)) * 2.0);
         c.r = texture2D(tDiffuse, uv + dir).r;
@@ -114,8 +130,25 @@ export class PostFX {
     const renderer = game.renderer;
     this.composer = new EffectComposer(renderer);
     this.composer.addPass(new RenderPass(game.scene, game.camera));
+    // Contact shadows / ambient occlusion (ULTRA, HIGH). GTAO renders its own depth+normal pass.
+    try {
+      this.gtao = new GTAOPass(game.scene, game.camera, innerWidth, innerHeight);
+      this.gtao.updateGtaoMaterial({ radius: 0.6, distanceExponent: 1.2, thickness: 1.2, scale: 1.1, samples: 12 });
+      this.gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 6, rings: 2, samples: 12 });
+      this.gtao.blendIntensity = 0.85;
+      this.gtao.enabled = false;
+      this.composer.addPass(this.gtao);
+    } catch (err) {
+      console.warn('GTAO unavailable', err);
+      this.gtao = null;
+    }
     this.bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.16, 0.35, 0.9);
     this.composer.addPass(this.bloom);
+    // Subtle depth of field: only while aiming down sights or during the jack-in card.
+    this.bokeh = new BokehPass(game.scene, game.camera, { focus: 12, aperture: 0.00035, maxblur: 0.0045 });
+    this.bokeh.enabled = false;
+    this.composer.addPass(this.bokeh);
+    this._lastYaw = null;
     this.film = new ShaderPass(GradeShader);
     this.composer.addPass(this.film);
     this.composer.addPass(new OutputPass());
@@ -133,6 +166,7 @@ export class PostFX {
     this.film.uniforms.chroma.value = p.chroma || 0;
     this.film.uniforms.splitTone.value = p.splitTone || 0;
     this.bloom.enabled = p.bloom > 0;
+    if (this.gtao) this.gtao.enabled = (p.ao ?? 0) > 0;
     if (this._size) this.resize(this._size.w, this._size.h);
   }
 
@@ -170,6 +204,41 @@ export class PostFX {
     this.film.uniforms.lensRain.value = reduced || !motion || this.game.mode === 'skim' ? 0 : (p.lensRain || 0);
     this.film.uniforms.chroma.value = reduced ? 0 : (p.chroma || 0);
     this.film.uniforms.time.value = this.game.time.elapsed;
+    const g = this.game;
+    if (this.gtao) this.gtao.enabled = !reduced && (p.ao ?? 0) > 0 && g.mode !== 'title';
+    // DOF: ADS focuses on what the crosshair sits on; the jack-in card softens the background.
+    const wantDof = !reduced && p.dof && motion && g.settings.dof !== false
+      && (g.photoMode ? !g.photoMode.view : ((g.mode === 'play' && g.weapons?.ads) || g.presenter?.barsT > 0));
+    this.bokeh.enabled = wantDof;
+    if (wantDof) {
+      const u = this.bokeh.uniforms;
+      let focus = 14;
+      if (g.photoMode) focus = 0.75;
+      else if (g.weapons?.ads) {
+        const o = g.camera.getWorldPosition(this._o || (this._o = new THREE.Vector3()));
+        const d = g.camera.getWorldDirection(this._d || (this._d = new THREE.Vector3()));
+        const hit = g.world.collision.raycast(o, d, 80);
+        focus = hit ? hit.t : 60;
+      }
+      this._focus = this._focus == null ? focus : this._focus + (focus - this._focus) * 0.15;
+      u.focus.value = this._focus;
+      u.aperture.value = g.photoMode ? 0.004 : g.weapons?.ads ? 0.00028 : 0.0005;
+      u.maxblur.value = g.photoMode ? 0.006 : 0.004;
+    }
+    // camera motion blur from yaw / pitch velocity
+    const mb = !reduced && motion && g.settings.motionBlur !== false ? (p.motionBlur || 0) : 0;
+    const bv = this.film.uniforms.blurVel.value;
+    if (mb > 0 && g.mode === 'play' && !g.player.inVehicle) {
+      const yaw = g.player.yaw; const pitch = g.player.pitch;
+      if (this._lastYaw != null) {
+        const fovY = THREE.MathUtils.degToRad(g.camera.fov);
+        const vx = -(yaw - this._lastYaw) / (fovY * g.camera.aspect);
+        const vy = (pitch - this._lastPitch) / fovY;
+        bv.set(THREE.MathUtils.clamp(vx * mb, -0.025, 0.025), THREE.MathUtils.clamp(vy * mb, -0.025, 0.025));
+        if (bv.lengthSq() < 4e-6) bv.set(0, 0);
+      }
+      this._lastYaw = yaw; this._lastPitch = pitch;
+    } else bv.set(0, 0);
     const h = this.game.health;
     let hurt = 0;
     if (h && this.game.mode !== 'title') {

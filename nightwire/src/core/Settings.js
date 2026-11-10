@@ -11,6 +11,8 @@ export const defaults = () => ({
   colorblind: false,
   colorMode: 'none',
   touchButtonScale: 1,
+  dof: true,
+  motionBlur: true,
   showTouch: false,
   gyro: false,
   autoSprint: 0.78,
