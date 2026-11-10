@@ -16,12 +16,15 @@ export class Campaign {
   boot() {
     this.beat = 0;
     this.objective = 'Check the phone. Job waiting.';
-    this.game.hud.subtitle('KITE', 'Wire. Rain’s ugly tonight. Package is in Warehouse 09. Don’t work clean.');
-    this.game.audio?.radioLine();
+    // The location card owns the first seconds; KITE comes in over the rain, then the phone buzzes.
+    setTimeout(() => {
+      this.game.hud.subtitle('KITE', 'Wire. Rain’s ugly tonight. Package is in Warehouse 09. Don’t work clean.');
+      this.game.audio?.radioLine();
+    }, 1600);
     setTimeout(() => {
       this.game.phone.buzz('JOB: INTERCEPT — WAREHOUSE 09');
       this.objective = 'Accept the job — Warehouse 09, Hafen.';
-    }, 1400);
+    }, 4200);
   }
 
   accept() {
@@ -96,7 +99,10 @@ export class Campaign {
     }
     if (it.kind === 'light') {
       const l = g.lights.points[g.lights.points.length - 1];
-      if (l) l.intensity = l.intensity > 0.2 ? 0 : 1.6;
+      if (l) {
+        l.userData.off = !l.userData.off;
+        l.intensity = l.userData.off ? 0 : (l.userData.baseIntensity ?? 1.6);
+      }
       g.hud.notify('SWITCH');
       return true;
     }
