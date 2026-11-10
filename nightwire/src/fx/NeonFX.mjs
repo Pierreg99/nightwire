@@ -41,13 +41,15 @@ export class NeonFX {
       i++;
     }
     g.scene.traverse((o) => {
-      if (!o.isMesh || !o.material || Array.isArray(o.material)) return;
-      const m = o.material;
-      if (!m.emissive || (m.emissiveIntensity ?? 0) < 1.5 || !saturated(m.emissive)) return;
-      if (m.userData.neonBase != null) return; // shared material, already registered
-      m.userData.neonBase = m.emissiveIntensity;
-      this.items.push(this._item({ material: m, mesh: o, faulty: seeded(i) < FAULTY_SHARE * 1.4, phase: seeded(i + 50) * 6.28 }));
-      i++;
+      if (!o.isMesh || !o.material) return;
+      // multi-material meshes (e.g. the two-faced vertical street signs) register each emissive slot
+      for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        if (!m.emissive || (m.emissiveIntensity ?? 0) < 1.5 || !saturated(m.emissive)) continue;
+        if (m.userData.neonBase != null) continue; // shared material, already registered
+        m.userData.neonBase = m.emissiveIntensity;
+        this.items.push(this._item({ material: m, mesh: o, faulty: seeded(i) < FAULTY_SHARE * 1.4, phase: seeded(i + 50) * 6.28 }));
+        i++;
+      }
     });
     return this.items.length;
   }
