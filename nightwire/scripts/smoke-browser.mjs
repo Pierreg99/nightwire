@@ -124,6 +124,10 @@ const state = await evalJs(`JSON.stringify({
   quality: document.getElementById('quality-readout')?.textContent || '',
   phoneOpen: document.body.classList.contains('phone-open'),
   fireVisible: !!document.getElementById('t-fire')?.offsetParent,
+  shafts: (window.__nightwire?.shafts || []).filter((m) => m.visible).length,
+  neon: window.__nightwire?.neon?.items.length ?? 0,
+  probe: !!window.__nightwire?.envProbe?.active,
+  fps: Math.round(1 / Math.max(1e-3, window.__nightwire?.time?.dt || 1)),
 })`);
 const shot = await send('Page.captureScreenshot', { format: 'png' });
 if (shot.result?.data) writeFileSync(out, Buffer.from(shot.result.data, 'base64'));

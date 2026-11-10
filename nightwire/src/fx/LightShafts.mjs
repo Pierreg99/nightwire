@@ -38,13 +38,13 @@ varying vec3 vWorld;
 void main() {
   vec3 v = normalize(-vViewPos);
   float facing = abs(dot(normalize(vNormalV), v));
-  float core = pow(facing, 2.2);                    // thick in the middle, thin at the silhouette
+  float core = pow(facing, 3.0);                    // thick in the middle, thin at the silhouette
   float along = smoothstep(0.0, 0.85, vAlong);      // uv.y = 1 at the lamp, 0 at the ground
   float dist = length(vViewPos);
   float far = 1.0 - smoothstep(38.0, 70.0, dist);
   float near = smoothstep(0.6, 3.2, dist);          // no full-screen wash when standing inside
-  float a = uIntensity * uShaftGain * core * along * far * near * 0.22;
-  gl_FragColor = vec4(uColor * a, a);
+  float a = uIntensity * uShaftGain * core * along * far * near * 0.15;
+  gl_FragColor = vec4(uColor, a); // additive: src * srcAlpha + dst
 }`;
 
 export function addLightShaft(world, x, y, z, color, length, radius, zone, target = null, intensity = 1) {
