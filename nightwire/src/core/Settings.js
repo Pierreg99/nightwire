@@ -9,6 +9,8 @@ export const defaults = () => ({
   reducedFx: false,
   motion: true,
   colorblind: false,
+  colorMode: 'none',
+  touchButtonScale: 1,
   showTouch: false,
   gyro: false,
   autoSprint: 0.78,

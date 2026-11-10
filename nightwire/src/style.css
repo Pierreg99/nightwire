@@ -218,6 +218,7 @@ h1 {
   pointer-events: auto; position: absolute; width: 56px; height: 56px; border-radius: 50%;
   border: 1px solid rgba(220,231,240,0.3); background: rgba(8,10,16,0.4);
   color: #e8f4ff; font: inherit; letter-spacing: 0.08em; font-size: 11px;
+  scale: var(--tbtn-scale, 1);
 }
 .tbtn.fire {
   right: max(28px, env(safe-area-inset-right));
@@ -268,3 +269,41 @@ body.touch-on .hud-bottom {
 body.touch-on #killfeed { top: calc(150px + env(safe-area-inset-top)); right: calc(76px + env(safe-area-inset-right)); }
 body.touch-on #subtitles { bottom: calc(150px + env(safe-area-inset-bottom)); max-width: 52vw; }
 body.touch-on #w-ammo { font-size: 20px; }
+
+/* Phone open on touch: the combat cluster would sit on top of the phone. Hide it (inputs are
+   released in Phone.open), keep only PH (close) and II (pause). */
+body.phone-open #touch .stick,
+body.phone-open #touch #look-pad,
+body.phone-open #touch .tbtn:not(#t-phone):not(#t-pause) { display: none; }
+
+/* Story presentation: letterbox, location / zone cards, objective flash, typewriter subtitles. */
+#cine { position: absolute; inset: 0; pointer-events: none; }
+.cine-bar { position: absolute; left: 0; right: 0; height: 11vh; background: #000; transform: scaleY(0); transition: transform 900ms cubic-bezier(.2,.7,.2,1); }
+.cine-bar.top { top: 0; transform-origin: top; }
+.cine-bar.bottom { bottom: 0; transform-origin: bottom; }
+#cine.bars .cine-bar { transform: scaleY(1); }
+.cine-card {
+  position: absolute; left: max(6vw, env(safe-area-inset-left)); bottom: 18vh;
+  opacity: 0; transform: translateY(8px); transition: opacity 600ms ease, transform 600ms ease;
+  text-shadow: 0 2px 14px #000;
+}
+.cine-card.show { opacity: 1; transform: none; }
+.cine-kicker { font-size: 11px; letter-spacing: 0.42em; color: var(--mag); }
+.cine-title { font-size: clamp(22px, 4vw, 40px); letter-spacing: 0.22em; margin: 4px 0; }
+.cine-sub { font-size: 12px; letter-spacing: 0.28em; color: #9ab; }
+#objective.flash { animation: obj-flash 1.4s ease-out; }
+@keyframes obj-flash {
+  0% { color: #fff; text-shadow: 0 0 18px rgba(62,224,255,0.95); }
+  100% { text-shadow: 0 1px 8px #000; }
+}
+#subtitles .cursor { display: inline-block; width: 0.5em; color: var(--cyan); animation: sub-blink 0.8s steps(2) infinite; }
+@keyframes sub-blink { 50% { opacity: 0; } }
+/* Touch layout: card goes top-centre, out from under the stick and the thumb buttons. */
+body.touch-on .cine-card { left: 50%; bottom: auto; top: 17vh; transform: translate(-50%, 8px); text-align: center; white-space: nowrap; }
+body.touch-on .cine-card.show { transform: translate(-50%, 0); }
+body.touch-on .cine-title { font-size: clamp(18px, 3.4vw, 30px); }
+body.touch-on .cine-bar { height: 7vh; }
+@media (prefers-reduced-motion: reduce) {
+  .cine-bar, .cine-card { transition: none; }
+  #objective.flash { animation: none; }
+}

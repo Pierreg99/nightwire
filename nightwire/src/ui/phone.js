@@ -1,4 +1,3 @@
-import { nowClock } from '../core/math.js';
 import { lockPointer, unlockPointer } from '../core/Input.js';
 
 export class Phone {
@@ -28,6 +27,8 @@ export class Phone {
     this.game.input.blocked = true;
     unlockPointer();
     this.el.classList.remove('hidden');
+    document.body.classList.add('phone-open');
+    this.game.touch?.releaseAll();
     this.showHome();
     this.game.audio?.ui();
   }
@@ -35,6 +36,7 @@ export class Phone {
   close() {
     this.openState = false;
     this.el.classList.add('hidden');
+    document.body.classList.remove('phone-open');
     this.game.skinEditor.closePreview();
     if (this.game.mode === 'phone') {
       this.game.mode = 'play';
@@ -90,8 +92,14 @@ export class Phone {
     }
   }
 
+  // In-world clock: the night starts at 23:41 (the jack-in card) and runs in real minutes.
   update() {
-    this.clock.textContent = nowClock();
+    const g = this.game;
+    if (g.mode === 'title') return;
+    if (this._jackT == null) this._jackT = g.time.elapsed;
+    const m = (23 * 60 + 41 + Math.floor((g.time.elapsed - this._jackT) / 60)) % 1440;
+    const text = `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+    if (text !== this._clock) { this._clock = text; this.clock.textContent = text; }
   }
 
   buzz(text) {

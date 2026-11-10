@@ -1,6 +1,11 @@
 import { saveSettings } from '../core/Settings.js';
 import { lockPointer, unlockPointer } from '../core/Input.js';
 
+export function applyTouchScale(v) {
+  const n = Math.min(1.5, Math.max(0.7, Number(v) || 1));
+  document.documentElement.style.setProperty('--tbtn-scale', String(n));
+}
+
 export class PauseMenu {
   constructor(game) {
     this.game = game;
@@ -45,6 +50,19 @@ export class PauseMenu {
     const pad = document.getElementById('set-padsens');
     pad.value = s.padSens;
     pad.addEventListener('input', () => { s.padSens = Number(pad.value); saveSettings(s); });
+    // Folded in from the old standalone settings menu: colour-vision correction (PostFX daltonize)
+    // and touch button size (CSS var on #touch), both persisted with the rest.
+    const cvd = document.getElementById('set-cvd');
+    cvd.value = s.colorMode || 'none';
+    cvd.addEventListener('change', () => { s.colorMode = cvd.value; saveSettings(s); });
+    const tb = document.getElementById('set-tbtn');
+    tb.value = s.touchButtonScale ?? 1;
+    tb.addEventListener('input', () => {
+      s.touchButtonScale = Number(tb.value);
+      applyTouchScale(s.touchButtonScale);
+      saveSettings(s);
+    });
+    applyTouchScale(s.touchButtonScale ?? 1);
     chk('set-fx', 'reducedFx', () => g.applyQuality());
     chk('set-motion', 'motion');
     chk('set-cb', 'colorblind');
