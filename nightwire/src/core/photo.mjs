@@ -60,10 +60,27 @@ export function photo(game, kind = 'face', type = null) {
     return kind;
   }
   if (g.weapons?.vm) g.weapons.vm.visible = false; // portrait shots: no viewmodel in frame
-  const list = g.npcs.list.filter((x) => x.alive && x.type !== 'dummy' && (!type || x.type === type));
+  if (kind === 'drone') {
+    const d = g.drones?.list?.[0];
+    if (!d) return 'none';
+    key.intensity = rim.intensity = 0;
+    g.photoMode = (cam) => {
+      if (g.weapons?.vm) g.weapons.vm.visible = false;
+      const p = d.root.position;
+      cam.position.set(p.x + Math.sin(d.yaw + 0.9) * 2.6, p.y - 0.5, p.z + Math.cos(d.yaw + 0.9) * 2.6);
+      cam.lookAt(p.x, p.y - 0.1, p.z);
+      cam.fov = 40; cam.updateProjectionMatrix();
+    };
+    g.player.pos.set(d.root.position.x, 0, d.root.position.z);
+    return 'drone';
+  }
+  // 'robot' = the security android, 'walk' = full body while the NPC keeps walking its route
+  const wantRobot = kind === 'robot';
+  const list = g.npcs.list.filter((x) => x.alive && x.type !== 'dummy' && (!type || x.type === type)
+    && (!wantRobot || x.human?.robot) && (kind !== 'walk' || x.wander));
   const n = list.sort((a, b) => a.mesh.position.distanceTo(g.player.pos) - b.mesh.position.distanceTo(g.player.pos))[0];
   if (!n) return 'none';
-  n.wander = false;
+  if (kind !== 'walk') n.wander = false;
   const v = new THREE.Vector3();
   // volumetric shaft cones right next to the subject would sit between lens and face; hide those few
   // (any additive light-volume mesh whose bounds reach the subject)
@@ -84,7 +101,7 @@ export function photo(game, kind = 'face', type = null) {
     const yaw = n.mesh.rotation.y;
     const fx = Math.sin(yaw + 0.35); const fz = Math.cos(yaw + 0.35);
     if (kind === 'face') {
-      const h = n.human.bones.head.getWorldPosition(v);
+      const h = (n.human.sockets?.head || n.human.bones.head).getWorldPosition(v);
       cam.position.set(h.x + fx * 0.75, h.y + 0.09, h.z + fz * 0.75);
       cam.lookAt(h.x, h.y + 0.085, h.z);
       cam.fov = 26;
@@ -95,7 +112,7 @@ export function photo(game, kind = 'face', type = null) {
       const p = n.mesh.position;
       cam.position.set(p.x + fx * 3.0, p.y + 1.3, p.z + fz * 3.0);
       cam.lookAt(p.x, p.y + 0.92, p.z);
-      cam.fov = 42;
+      cam.fov = kind === 'walk' ? 46 : 42;
       key.position.set(p.x + Math.sin(yaw - 0.8) * 2, p.y + 2.2, p.z + Math.cos(yaw - 0.8) * 2);
       rim.position.set(p.x - Math.sin(yaw) * 1.6, p.y + 1.8, p.z - Math.cos(yaw) * 1.6);
       key.position.set(cam.position.x * 0.5 + p.x * 0.5 + Math.sin(yaw - 1.2), p.y + 2.2, cam.position.z * 0.5 + p.z * 0.5 + Math.cos(yaw - 1.2));

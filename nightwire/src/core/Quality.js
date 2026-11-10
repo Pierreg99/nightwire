@@ -44,6 +44,13 @@ export const PROFILES = {
     motionBlur: 0.5,
     dressing: 1,
     skyline: 3,
+    // hyperreal pass: photographic assets, PBR / HDRI resolution, prop density, drones, MSAA
+    assets: 'full',
+    pbr: '2k',
+    hdri: '2k',
+    props: 1,
+    drones: 3,
+    msaa: 4,
   },
   high: {
     id: 'high',
@@ -90,6 +97,13 @@ export const PROFILES = {
     motionBlur: 0.35,
     dressing: 1,
     skyline: 3,
+    // hyperreal pass: photographic assets, PBR / HDRI resolution, prop density, drones, MSAA
+    assets: 'full',
+    pbr: '2k',
+    hdri: '2k',
+    props: 1,
+    drones: 2,
+    msaa: 4,
   },
   medium: {
     id: 'medium',
@@ -136,6 +150,13 @@ export const PROFILES = {
     motionBlur: 0,
     dressing: 0.7,
     skyline: 2,
+    // hyperreal pass: photographic assets, PBR / HDRI resolution, prop density, drones, MSAA
+    assets: 'lod',
+    pbr: '1k',
+    hdri: '1k',
+    props: 0.7,
+    drones: 2,
+    msaa: 0,
   },
   mobile: {
     id: 'mobile',
@@ -182,6 +203,13 @@ export const PROFILES = {
     motionBlur: 0,
     dressing: 0.45,
     skyline: 1,
+    // hyperreal pass: photographic assets, PBR / HDRI resolution, prop density, drones, MSAA
+    assets: 'lod',
+    pbr: '1k',
+    hdri: '1k',
+    props: 0.45,
+    drones: 1,
+    msaa: 0,
   },
 };
 

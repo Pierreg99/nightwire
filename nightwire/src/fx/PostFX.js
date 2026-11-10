@@ -167,7 +167,20 @@ export class PostFX {
     this.film.uniforms.splitTone.value = p.splitTone || 0;
     this.bloom.enabled = p.bloom > 0;
     if (this.gtao) this.gtao.enabled = (p.ao ?? 0) > 0;
+    this._applyMsaa(p.msaa || 0);
     if (this._size) this.resize(this._size.w, this._size.h);
+  }
+
+  /** Hardware MSAA on the composer targets (ULTRA / HIGH, WebGL2): geometric edges, hair cards, wires. */
+  _applyMsaa(samples) {
+    const max = this.game.renderer.capabilities?.maxSamples ?? 0;
+    const n = Math.min(samples, max);
+    for (const rt of [this.composer.renderTarget1, this.composer.renderTarget2]) {
+      if (rt.samples === n) continue;
+      rt.samples = n;
+      rt.dispose();
+    }
+    this.msaa = n;
   }
 
   setProfile(profile) {

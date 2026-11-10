@@ -41,6 +41,9 @@ import { applyWetProfile } from '../fx/wetAsphalt.mjs';
 import { StoryPresenter } from '../ui/StoryPresenter.mjs';
 import { applyTouchScale } from '../ui/pause.js';
 import { photo } from './photo.mjs';
+import { AssetLibrary } from '../assets/AssetLibrary.mjs';
+import { loadHyperreal } from '../assets/hyperreal.mjs';
+import { Drones } from '../world/Drones.mjs';
 
 export class Game {
   constructor() {
@@ -130,6 +133,7 @@ export class Game {
     this.neon = new NeonFX(this);
     this.neon.collect();
     this.envProbe = new EnvProbe(this);
+    this.drones = new Drones(this);
     this.touch.show(this.settings.showTouch);
     applyTouchScale(this.settings.touchButtonScale ?? 1);
     this.applyQuality();
@@ -153,6 +157,15 @@ export class Game {
     this.resize();
     document.getElementById('boot-splash')?.classList.add('hidden');
     this.renderer.setAnimationLoop(() => this.frame());
+
+    // Photographic assets stream in after the first frame; the procedural world is the fallback.
+    this.assets = new AssetLibrary(this.renderer);
+    const afterFirstFrames = new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+    this.assetsReady = afterFirstFrames.then(() => loadHyperreal(this)).catch((err) => {
+      console.warn('[assets] hyperreal pass failed, procedural look stays', err);
+      this.hyperreal = { error: String(err?.message || err) };
+      return this.hyperreal;
+    });
   }
 
   photo(kind, type) {
@@ -323,6 +336,7 @@ export class Game {
       this.photoMode(this.camera, dt);
       this.presenter.update(dt);
       this.dressing?.update(dt * 4, this.world.zoneAt(this.player.pos.z));
+      this.drones?.update(dt);
       this.envProbe?.update(dt);
       this.post.render(dt);
       return;
@@ -333,6 +347,7 @@ export class Game {
       const t = this.titleT;
       this.camera.position.set(8 + Math.sin(t * 0.12) * 2.2, 3.4, -18);
       this.camera.lookAt(22, 14, -72);
+      this.drones?.update(dt);
       this.weather.update(dt);
       this.envProbe?.update(dt);
       this.post.render(dt);
@@ -382,6 +397,7 @@ export class Game {
       this.bounce.position.set(this.player.pos.x, this.player.pos.y - 20, this.player.pos.z + 6);
       this.audio.updateAmbience?.(dt, this.hud?.zone);
       this.dressing?.update(dt, this.hud?.zone);
+      this.drones?.update(dt);
       this.bodyShadow.position.set(this.player.pos.x, this.player.pos.y + 0.04, this.player.pos.z);
       this.audio.setListener(this.player.pos);
     } else {

@@ -30,7 +30,11 @@ const SHOTS = {
   strip: `window.__nightwire.photo('strip')`,
   hof: `window.__nightwire.photo('hof')`,
   docks: `window.__nightwire.photo('docks')`,
+  robot: `window.__nightwire.photo('robot')`,
+  walk: `window.__nightwire.photo('walk', ${JSON.stringify(opt('--type', 'civil'))})`,
+  drone: `window.__nightwire.photo('drone')`,
 };
+const assetWait = Number(opt('--asset-wait', 90000)); // max wait for the hyperreal asset pass
 
 if (!existsSync(path.join(dist, 'index.html'))) {
   console.error('dist/index.html missing. Run npm run build first.');
@@ -45,7 +49,8 @@ if (!chrome) {
 }
 
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml' };
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml',
+  '.webp': 'image/webp', '.glb': 'model/gltf-binary', '.hdr': 'image/vnd.radiance', '.ktx2': 'image/ktx2' };
 const notFound = [];
 const server = createServer((req, res) => {
   const rel = decodeURIComponent(new URL(req.url, 'http://x').pathname).replace(/^\/+/, '') || 'index.html';
@@ -59,7 +64,9 @@ const server = createServer((req, res) => {
   res.end(readFileSync(file));
 });
 await new Promise((r) => server.listen(0, '127.0.0.1', r));
-const url = `http://127.0.0.1:${server.address().port}/${mobile ? '?apk=1' : ''}`;
+const extraQuery = opt('--query', '');            // e.g. --query assets=0 (procedural fallback)
+const qs = [mobile ? 'apk=1' : '', extraQuery].filter(Boolean).join('&');
+const url = `http://127.0.0.1:${server.address().port}/${qs ? `?${qs}` : ''}`;
 
 const profile = mkdtempSync(path.join(os.tmpdir(), 'nw-chrome-'));
 const browser = spawn(chrome, [
@@ -77,8 +84,13 @@ const wsUrl = await new Promise((resolve, reject) => {
   setTimeout(() => reject(new Error('Chrome did not start')), 15000);
 });
 const port = new URL(wsUrl).port;
-const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-const page = targets.find((t) => t.type === 'page');
+let page = null;
+for (let i = 0; i < 50 && !page; i++) { // the about:blank target can appear a moment after DevTools
+  const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
+  page = targets.find((t) => t.type === 'page');
+  if (!page) await new Promise((r) => setTimeout(r, 100));
+}
+if (!page) throw new Error('Chrome exposed no page target');
 const ws = new WebSocket(page.webSocketDebuggerUrl);
 await new Promise((r) => ws.addEventListener('open', r, { once: true }));
 let seq = 0;
@@ -120,6 +132,12 @@ if (forceQuality) {
   await send('Page.reload', {});
   await sleep(6000);
 }
+const tA = Date.now();
+const assets = await evalJs(`Promise.race([
+  (window.__nightwire?.assetsReady || Promise.resolve(null)).then((r) => JSON.stringify(r && { ...r, lib: undefined, failed: r.lib?.failed, loadErrors: r.lib?.errors })),
+  new Promise((r) => setTimeout(() => r('"timeout"'), ${assetWait})),
+])`);
+console.log(`assets   ${assets} (${Date.now() - tA} ms after boot wait)`);
 await evalJs(`document.getElementById('btn-jack')?.click()`);
 await sleep(waitMs);
 const evalExpr = opt('--eval', '');               // devtools expression, result printed (debugging)
@@ -160,5 +178,8 @@ for (const l of logs.filter((x) => /^\[(error|warning|warn)\]/.test(x)).slice(0,
 console.log(`frame    ${out}`);
 const shaderErrors = logs.filter((x) => /Shader Error|WebGLProgram|not compiled/i.test(x));
 if (shaderErrors.length) console.log(`shader   ${shaderErrors.length} shader compile error(s)`);
-const fail = errors.length > 0 || shaderErrors.length > 0 || !!s.bootError || !s.webgl2 || (!s.hud && !shotKind);
+let assetFail = false;
+try { const a = JSON.parse(assets || 'null'); assetFail = !!a && (a === 'timeout' || a.error || a.failed > 0); } catch { assetFail = true; }
+if (assetFail) console.log('assets   FAILED (see above)');
+const fail = assetFail || errors.length > 0 || shaderErrors.length > 0 || !!s.bootError || !s.webgl2 || (!s.hud && !shotKind);
 process.exit(fail ? 1 : 0);
