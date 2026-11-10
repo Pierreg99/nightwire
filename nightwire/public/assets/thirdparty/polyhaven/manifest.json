@@ -1,0 +1,913 @@
+{
+  "fetched": "2026-11-10",
+  "assets": [
+    {
+      "id": "neuer_zollhof",
+      "kind": "hdris",
+      "name": "Neuer Zollhof",
+      "authors": [
+        "Greg Zaal"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/neuer_zollhof",
+      "published": "2018-04-04",
+      "res": "1k+2k",
+      "files": [
+        "neuer_zollhof_1k.hdr",
+        "neuer_zollhof_2k.hdr"
+      ]
+    },
+    {
+      "id": "Barrel_01",
+      "kind": "models",
+      "name": "Barrel_01",
+      "authors": [
+        "Jorge Camacho"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/Barrel_01",
+      "published": "2020-03-30",
+      "res": "1k",
+      "files": [
+        "Barrel_01_1k.gltf",
+        "Barrel_01.bin",
+        "textures/Barrel_01_explosive_diff_1k.jpg",
+        "textures/Barrel_01_explosive_nor_gl_1k.jpg",
+        "textures/Barrel_01_explosive_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "barrel_03",
+      "kind": "models",
+      "name": "Barrel 03",
+      "authors": [
+        "Serhii Khromov"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/barrel_03",
+      "published": "2021-09-22",
+      "res": "1k",
+      "files": [
+        "barrel_03_1k.gltf",
+        "textures/barrel_03_diff_1k.jpg",
+        "barrel_03.bin",
+        "textures/barrel_03_nor_gl_1k.jpg",
+        "textures/barrel_03_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "cardboard_box_01",
+      "kind": "models",
+      "name": "Cardboard Box 01",
+      "authors": [
+        "Rahul Chaudhary"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/cardboard_box_01",
+      "published": "2022-12-16",
+      "res": "1k",
+      "files": [
+        "cardboard_box_01_1k.gltf",
+        "textures/cardboard_box_01_arm_1k.jpg",
+        "cardboard_box_01.bin",
+        "textures/cardboard_box_01_diff_1k.jpg",
+        "textures/cardboard_box_01_nor_gl_1k.jpg"
+      ]
+    },
+    {
+      "id": "concrete_road_barrier",
+      "kind": "models",
+      "name": "Concrete Road Barrier",
+      "authors": [
+        "Amal Kumar"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/concrete_road_barrier",
+      "published": "2023-08-18",
+      "res": "1k",
+      "files": [
+        "concrete_road_barrier_1k.gltf",
+        "textures/concrete_road_barrier_nor_gl_1k.jpg",
+        "textures/concrete_road_barrier_arm_1k.jpg",
+        "textures/concrete_road_barrier_diff_1k.jpg",
+        "concrete_road_barrier.bin"
+      ]
+    },
+    {
+      "id": "concrete_road_barrier_02",
+      "kind": "models",
+      "name": "Concrete Road Barrier 02",
+      "authors": [
+        "Amal Kumar"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/concrete_road_barrier_02",
+      "published": "2023-11-17",
+      "res": "1k",
+      "files": [
+        "concrete_road_barrier_02_1k.gltf",
+        "concrete_road_barrier_02.bin",
+        "textures/concrete_road_barrier_02_arm_1k.jpg",
+        "textures/concrete_road_barrier_02_nor_gl_1k.jpg",
+        "textures/concrete_road_barrier_02_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "covered_car",
+      "kind": "models",
+      "name": "Covered Car",
+      "authors": [
+        "MP"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/covered_car",
+      "published": "2023-11-22",
+      "res": "1k",
+      "files": [
+        "covered_car_1k.gltf",
+        "covered_car.bin",
+        "textures/covered_car_nor_gl_1k.jpg",
+        "textures/covered_car_arm_1k.jpg",
+        "textures/covered_car_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "exterior_aircon_unit",
+      "kind": "models",
+      "name": "Exterior Aircon Unit",
+      "authors": [
+        "Monsta3D"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/exterior_aircon_unit",
+      "published": "2023-08-16",
+      "res": "1k",
+      "files": [
+        "exterior_aircon_unit_1k.gltf",
+        "textures/exterior_aircon_unit_01_nor_gl_1k.jpg",
+        "textures/exterior_aircon_unit_01_opacity_1k.jpg",
+        "textures/exterior_aircon_unit_rusted_01_arm_1k.jpg",
+        "textures/exterior_aircon_unit_01_arm_1k.jpg",
+        "textures/exterior_aircon_unit_02_arm_1k.jpg",
+        "textures/exterior_aircon_unit_rusted_02_arm_1k.jpg",
+        "exterior_aircon_unit.bin",
+        "textures/exterior_aircon_unit_02_nor_gl_1k.jpg",
+        "textures/exterior_aircon_unit_rusted_01_nor_gl_1k.jpg",
+        "textures/exterior_aircon_unit_rusted_01_diff_1k.jpg",
+        "textures/exterior_aircon_unit_01_diff_1k.jpg",
+        "textures/exterior_aircon_unit_rusted_02_opacity_1k.jpg",
+        "textures/exterior_aircon_unit_rusted_02_nor_gl_1k.jpg"
+      ]
+    },
+    {
+      "id": "fire_hydrant",
+      "kind": "models",
+      "name": "Fire Hydrant",
+      "authors": [
+        "Gon\u00e7alo Fel\u00edcio"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/fire_hydrant",
+      "published": "2023-10-27",
+      "res": "1k",
+      "files": [
+        "fire_hydrant_1k.gltf",
+        "fire_hydrant.bin",
+        "textures/fire_hydrant_nor_gl_1k.jpg",
+        "textures/fire_hydrant_aged_diff_1k.jpg",
+        "textures/fire_hydrant_aged_arm_1k.jpg",
+        "textures/fire_hydrant_aged_nor_gl_1k.jpg",
+        "textures/fire_hydrant_diff_1k.jpg",
+        "textures/fire_hydrant_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "hand_truck",
+      "kind": "models",
+      "name": "Hand Truck",
+      "authors": [
+        "Mutanzom3D"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/hand_truck",
+      "published": "2026-04-14",
+      "res": "1k",
+      "files": [
+        "hand_truck_1k.gltf",
+        "textures/hand_truck_nor_gl_1k.jpg",
+        "textures/hand_truck_diff_1k.jpg",
+        "textures/hand_truck_arm_1k.jpg",
+        "hand_truck.bin"
+      ]
+    },
+    {
+      "id": "industrial_wall_lamp",
+      "kind": "models",
+      "name": "Industrial Wall Lamp",
+      "authors": [
+        "Kuutti Siitonen"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/industrial_wall_lamp",
+      "published": "2025-06-02",
+      "res": "1k",
+      "files": [
+        "industrial_wall_lamp_1k.gltf",
+        "textures/industrial_wall_lamp_emissive_1k.jpg",
+        "textures/industrial_wall_lamp_nor_gl_1k.jpg",
+        "textures/industrial_wall_lamp_diff_1k.jpg",
+        "textures/industrial_wall_lamp_arm_1k.jpg",
+        "textures/industrial_wall_lamp_glass_nor_gl_1k.jpg",
+        "textures/industrial_wall_lamp_glass_diff_1k.jpg",
+        "textures/industrial_wall_lamp_glass_arm_1k.jpg",
+        "industrial_wall_lamp.bin"
+      ]
+    },
+    {
+      "id": "korean_public_payphone_01",
+      "kind": "models",
+      "name": "Korean Public Payphone 01",
+      "authors": [
+        "UM JOORIN"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/korean_public_payphone_01",
+      "published": "2021-06-15",
+      "res": "1k",
+      "files": [
+        "korean_public_payphone_01_1k.gltf",
+        "textures/korean_public_payphone_01_nor_gl_1k.jpg",
+        "textures/korean_public_payphone_01_diff_1k.jpg",
+        "korean_public_payphone_01.bin",
+        "textures/korean_public_payphone_01_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "metal_jerrycan",
+      "kind": "models",
+      "name": "Metal Jerrycan",
+      "authors": [
+        "Sean Buckley"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/metal_jerrycan",
+      "published": "2026-03-20",
+      "res": "1k",
+      "files": [
+        "metal_jerrycan_1k.gltf",
+        "textures/metal_jerrycan_nor_gl_1k.jpg",
+        "textures/metal_jerrycan_diff_1k.jpg",
+        "textures/metal_jerrycan_arm_1k.jpg",
+        "metal_jerrycan.bin"
+      ]
+    },
+    {
+      "id": "metal_trash_can",
+      "kind": "models",
+      "name": "Metal Trash Can",
+      "authors": [
+        "GurJas Studios"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/metal_trash_can",
+      "published": "2023-09-27",
+      "res": "1k",
+      "files": [
+        "metal_trash_can_1k.gltf",
+        "textures/metal_trash_can_diff_1k.jpg",
+        "textures/metal_trash_can_rust_diff_1k.jpg",
+        "textures/metal_trash_can_arm_1k.jpg",
+        "textures/metal_trash_can_rust_nor_gl_1k.jpg",
+        "textures/metal_trash_can_nor_gl_1k.jpg",
+        "metal_trash_can.bin",
+        "textures/metal_trash_can_rust_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "modular_airduct_rectangular_01",
+      "kind": "models",
+      "name": "Modular Airduct Rectangular 01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/modular_airduct_rectangular_01",
+      "published": "2021-08-19",
+      "res": "1k",
+      "files": [
+        "modular_airduct_rectangular_01_1k.gltf",
+        "textures/modular_airduct_rectangular_01_parts01_nor_gl_1k.jpg",
+        "textures/modular_airduct_rectangular_01_parts02_nor_gl_1k.jpg",
+        "textures/modular_airduct_rectangular_01_parts02_diff_1k.jpg",
+        "modular_airduct_rectangular_01.bin",
+        "textures/modular_airduct_rectangular_01_parts01_arm_1k.jpg",
+        "textures/modular_airduct_rectangular_01_parts02_arm_1k.jpg",
+        "textures/modular_airduct_rectangular_01_parts01_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "modular_chainlink_fence",
+      "kind": "models",
+      "name": "Modular Chainlink Fence",
+      "authors": [
+        "James Ray Cock",
+        "Amal Kumar"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/modular_chainlink_fence",
+      "published": "2023-11-11",
+      "res": "1k",
+      "files": [
+        "modular_chainlink_fence_1k.gltf",
+        "modular_chainlink_fence.bin",
+        "textures/modular_chainlink_fence_posts_nor_gl_1k.jpg",
+        "textures/modular_chainlink_fence_wire_arm_1k.jpg",
+        "textures/modular_chainlink_fence_wire_nor_gl_1k.jpg",
+        "textures/modular_chainlink_fence_wire_diff_1k.jpg",
+        "textures/modular_chainlink_fence_posts_arm_1k.jpg",
+        "textures/modular_chainlink_fence_posts_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "modular_fire_escape",
+      "kind": "models",
+      "name": "Modular Fire Escape",
+      "authors": [
+        "Juniix"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/modular_fire_escape",
+      "published": "2023-09-13",
+      "res": "1k",
+      "files": [
+        "modular_fire_escape_1k.gltf",
+        "textures/modular_fire_escape_01_arm_1k.jpg",
+        "textures/modular_fire_escape_02_nor_gl_1k.jpg",
+        "textures/modular_fire_escape_02_arm_1k.jpg",
+        "modular_fire_escape.bin",
+        "textures/modular_fire_escape_02_diff_1k.jpg",
+        "textures/modular_fire_escape_01_diff_1k.jpg",
+        "textures/modular_fire_escape_01_nor_gl_1k.jpg"
+      ]
+    },
+    {
+      "id": "modular_industrial_pipes_01",
+      "kind": "models",
+      "name": "Modular Industrial Pipes 01",
+      "authors": [
+        "Jorge Camacho"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/modular_industrial_pipes_01",
+      "published": "2021-06-15",
+      "res": "1k",
+      "files": [
+        "modular_industrial_pipes_01_1k.gltf",
+        "textures/modular_industrial_pipes_01_group02_arm_1k.jpg",
+        "textures/modular_industrial_pipes_01_group01_diff_1k.jpg",
+        "textures/modular_industrial_pipes_01_group02_nor_gl_1k.jpg",
+        "modular_industrial_pipes_01.bin",
+        "textures/modular_industrial_pipes_01_group01_nor_gl_1k.jpg",
+        "textures/modular_industrial_pipes_01_group01_arm_1k.jpg",
+        "textures/modular_industrial_pipes_01_group02_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "modular_street_seating",
+      "kind": "models",
+      "name": "Modular Street Seating",
+      "authors": [
+        "Stuart Attenborrow"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/modular_street_seating",
+      "published": "2023-09-08",
+      "res": "1k",
+      "files": [
+        "modular_street_seating_1k.gltf",
+        "textures/modular_street_seating_supports_diff_1k.jpg",
+        "textures/modular_street_seating_armrests_nor_gl_1k.jpg",
+        "textures/modular_street_seating_timber_arm_1k.jpg",
+        "textures/modular_street_seating_supports_nor_gl_1k.jpg",
+        "textures/modular_street_seating_timber_diff_1k.jpg",
+        "textures/modular_street_seating_connectors_nor_gl_1k.jpg",
+        "textures/modular_street_seating_armrests_diff_1k.jpg",
+        "textures/modular_street_seating_supports_arm_1k.jpg",
+        "textures/modular_street_seating_connectors_diff_1k.jpg",
+        "textures/modular_street_seating_armrests_arm_1k.jpg",
+        "textures/modular_street_seating_timber_nor_gl_1k.jpg",
+        "textures/modular_street_seating_connectors_arm_1k.jpg",
+        "modular_street_seating.bin"
+      ]
+    },
+    {
+      "id": "old_tyre",
+      "kind": "models",
+      "name": "Old Tyre",
+      "authors": [
+        "MP"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/old_tyre",
+      "published": "2023-10-30",
+      "res": "1k",
+      "files": [
+        "old_tyre_1k.gltf",
+        "textures/old_tyre_diff_1k.jpg",
+        "textures/old_tyre_arm_1k.jpg",
+        "old_tyre.bin",
+        "textures/old_tyre_nor_gl_1k.jpg"
+      ]
+    },
+    {
+      "id": "plastic_crate_01",
+      "kind": "models",
+      "name": "Plastic Crate 01",
+      "authors": [
+        "PierreB3D"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/plastic_crate_01",
+      "published": "2026-06-09",
+      "res": "1k",
+      "files": [
+        "plastic_crate_01_1k.gltf",
+        "textures/plastic_crate_01_nor_gl_1k.jpg",
+        "textures/plastic_crate_01_diff_1k.jpg",
+        "textures/plastic_crate_01_arm_1k.jpg",
+        "plastic_crate_01.bin"
+      ]
+    },
+    {
+      "id": "portable_generator",
+      "kind": "models",
+      "name": "Portable Generator",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/portable_generator",
+      "published": "2026-07-03",
+      "res": "1k",
+      "files": [
+        "portable_generator_1k.gltf",
+        "textures/portable_generator_spec_1k.jpg",
+        "textures/portable_generator_nor_gl_1k.jpg",
+        "textures/portable_generator_diff_1k.jpg",
+        "textures/portable_generator_arm_1k.jpg",
+        "portable_generator.bin"
+      ]
+    },
+    {
+      "id": "power_box_01",
+      "kind": "models",
+      "name": "Power Box 01",
+      "authors": [
+        "Rico Cilliers",
+        "Yann Kervran"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/power_box_01",
+      "published": "2021-10-29",
+      "res": "1k",
+      "files": [
+        "power_box_01_1k.gltf",
+        "textures/power_box_01_arm_1k.jpg",
+        "textures/power_box_01_nor_gl_1k.jpg",
+        "power_box_01.bin",
+        "textures/power_box_01_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "propane_tank",
+      "kind": "models",
+      "name": "Propane Tank",
+      "authors": [
+        "Slinc"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/propane_tank",
+      "published": "2026-03-20",
+      "res": "1k",
+      "files": [
+        "propane_tank_1k.gltf",
+        "textures/propane_tank_nor_gl_1k.jpg",
+        "textures/propane_tank_diff_1k.jpg",
+        "textures/propane_tank_arm_1k.jpg",
+        "propane_tank.bin"
+      ]
+    },
+    {
+      "id": "rollershutter_door",
+      "kind": "models",
+      "name": "Rollershutter Door",
+      "authors": [
+        "MP"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/rollershutter_door",
+      "published": "2023-10-11",
+      "res": "1k",
+      "files": [
+        "rollershutter_door_1k.gltf",
+        "rollershutter_door.bin",
+        "textures/rollershutter_door_arm_1k.jpg",
+        "textures/rollershutter_door_diff_1k.jpg",
+        "textures/rollershutter_door_nor_gl_1k.jpg",
+        "textures/rollershutter_door_graffiti_diff_1k.jpg"
+      ]
+    },
+    {
+      "id": "security_camera_01",
+      "kind": "models",
+      "name": "Security Camera 01",
+      "authors": [
+        "Alexander Otterbeck",
+        "Yann Kervran"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/security_camera_01",
+      "published": "2023-09-29",
+      "res": "1k",
+      "files": [
+        "security_camera_01_1k.gltf",
+        "security_camera_01.bin",
+        "textures/security_camera_01_diff_1k.jpg",
+        "textures/security_camera_01_arm_1k.jpg",
+        "textures/security_camera_01_nor_gl_1k.jpg"
+      ]
+    },
+    {
+      "id": "security_light",
+      "kind": "models",
+      "name": "Security Light",
+      "authors": [
+        "Maximilian Schuster"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/security_light",
+      "published": "2023-11-10",
+      "res": "1k",
+      "files": [
+        "security_light_1k.gltf",
+        "textures/security_light_nor_gl_1k.jpg",
+        "security_light.bin",
+        "textures/security_light_diff_1k.jpg",
+        "textures/security_light_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "street_lamp_01",
+      "kind": "models",
+      "name": "Street Lamp 01",
+      "authors": [
+        "Josh Dean"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/street_lamp_01",
+      "published": "2023-10-20",
+      "res": "1k",
+      "files": [
+        "street_lamp_01_1k.gltf",
+        "textures/street_lamp_01_arm_1k.jpg",
+        "textures/street_lamp_01_diff_1k.jpg",
+        "textures/street_lamp_01_nor_gl_1k.jpg",
+        "street_lamp_01.bin"
+      ]
+    },
+    {
+      "id": "street_lamp_02",
+      "kind": "models",
+      "name": "Street Lamp 02",
+      "authors": [
+        "Josh Dean"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/street_lamp_02",
+      "published": "2023-10-25",
+      "res": "1k",
+      "files": [
+        "street_lamp_02_1k.gltf",
+        "textures/street_lamp_02_diff_1k.jpg",
+        "textures/street_lamp_02_arm_1k.jpg",
+        "street_lamp_02.bin",
+        "textures/street_lamp_02_nor_gl_1k.jpg"
+      ]
+    },
+    {
+      "id": "trashbag",
+      "kind": "models",
+      "name": "Trashbag",
+      "authors": [
+        "Benny Weimer"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/trashbag",
+      "published": "2026-06-09",
+      "res": "1k",
+      "files": [
+        "trashbag_1k.gltf",
+        "textures/trashbag_nor_gl_1k.jpg",
+        "textures/trashbag_diff_1k.jpg",
+        "textures/trashbag_arm_1k.jpg",
+        "trashbag.bin"
+      ]
+    },
+    {
+      "id": "utility_box_01",
+      "kind": "models",
+      "name": "Utility Box 01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/utility_box_01",
+      "published": "2023-11-18",
+      "res": "1k",
+      "files": [
+        "utility_box_01_1k.gltf",
+        "textures/utility_box_01_diff_1k.jpg",
+        "textures/utility_box_01_nor_gl_1k.jpg",
+        "textures/utility_box_01_arm_1k.jpg",
+        "utility_box_01.bin"
+      ]
+    },
+    {
+      "id": "utility_box_02",
+      "kind": "models",
+      "name": "Utility Box 02",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/utility_box_02",
+      "published": "2023-11-24",
+      "res": "1k",
+      "files": [
+        "utility_box_02_1k.gltf",
+        "textures/utility_box_02_diff_1k.jpg",
+        "textures/utility_box_02_arm_1k.jpg",
+        "textures/utility_box_02_nor_gl_1k.jpg",
+        "utility_box_02.bin"
+      ]
+    },
+    {
+      "id": "water_manhole_cover",
+      "kind": "models",
+      "name": "Water Manhole Cover",
+      "authors": [
+        "Raunox"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/water_manhole_cover",
+      "published": "2023-11-08",
+      "res": "1k",
+      "files": [
+        "water_manhole_cover_1k.gltf",
+        "textures/water_manhole_cover_arm_1k.jpg",
+        "textures/water_manhole_cover_nor_gl_1k.jpg",
+        "textures/water_manhole_cover_diff_1k.jpg",
+        "water_manhole_cover.bin"
+      ]
+    },
+    {
+      "id": "WetFloorSign_01",
+      "kind": "models",
+      "name": "Wet Floor Sign 01",
+      "authors": [
+        "Fran Calvente"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/WetFloorSign_01",
+      "published": "2020-03-30",
+      "res": "1k",
+      "files": [
+        "WetFloorSign_01_1k.gltf",
+        "textures/WetFloorSign_01_arm_1k.jpg",
+        "textures/WetFloorSign_01_nor_gl_1k.jpg",
+        "textures/WetFloorSign_01_diff_1k.jpg",
+        "WetFloorSign_01.bin"
+      ]
+    },
+    {
+      "id": "wooden_crate_01",
+      "kind": "models",
+      "name": "Wooden Crate 01",
+      "authors": [
+        "James Ray Cock"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/wooden_crate_01",
+      "published": "2022-02-25",
+      "res": "1k",
+      "files": [
+        "wooden_crate_01_1k.gltf",
+        "textures/wooden_crate_01_diff_1k.jpg",
+        "textures/wooden_crate_01_nor_gl_1k.jpg",
+        "wooden_crate_01.bin",
+        "textures/wooden_crate_01_arm_1k.jpg"
+      ]
+    },
+    {
+      "id": "wooden_military_crate",
+      "kind": "models",
+      "name": "Wooden Military Crate",
+      "authors": [
+        "Prabhjinder Singh"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/wooden_military_crate",
+      "published": "2026-06-20",
+      "res": "1k",
+      "files": [
+        "wooden_military_crate_1k.gltf",
+        "textures/wooden_military_crate_nor_gl_1k.jpg",
+        "textures/wooden_military_crate_diff_1k.jpg",
+        "textures/wooden_military_crate_arm_1k.jpg",
+        "wooden_military_crate.bin"
+      ]
+    },
+    {
+      "id": "asphalt_02",
+      "kind": "textures",
+      "name": "Asphalt 02",
+      "authors": [
+        "Rob Tuytel"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/asphalt_02",
+      "published": "2020-08-06",
+      "res": "2k",
+      "files": [
+        "asphalt_02_diff_2k.jpg",
+        "asphalt_02_nor_gl_2k.jpg",
+        "asphalt_02_rough_2k.jpg",
+        "asphalt_02_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "brick_wall_10",
+      "kind": "textures",
+      "name": "Brick Wall 10",
+      "authors": [
+        "Dimitrios Savva"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/brick_wall_10",
+      "published": "2024-10-31",
+      "res": "2k",
+      "files": [
+        "brick_wall_10_diff_2k.jpg",
+        "brick_wall_10_nor_gl_2k.jpg",
+        "brick_wall_10_rough_2k.jpg",
+        "brick_wall_10_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "concrete_floor_worn_001",
+      "kind": "textures",
+      "name": "Concrete Floor Worn 001",
+      "authors": [
+        "Dimitrios Savva",
+        "Rico Cilliers"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/concrete_floor_worn_001",
+      "published": "2021-08-03",
+      "res": "2k",
+      "files": [
+        "concrete_floor_worn_001_diff_2k.jpg",
+        "concrete_floor_worn_001_nor_gl_2k.jpg",
+        "concrete_floor_worn_001_rough_2k.jpg",
+        "concrete_floor_worn_001_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "concrete_pavement",
+      "kind": "textures",
+      "name": "Concrete Pavement",
+      "authors": [
+        "Charlotte Baglioni"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/concrete_pavement",
+      "published": "2024-02-20",
+      "res": "2k",
+      "files": [
+        "concrete_pavement_diff_2k.jpg",
+        "concrete_pavement_nor_gl_2k.jpg",
+        "concrete_pavement_rough_2k.jpg",
+        "concrete_pavement_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "concrete_tile_facade",
+      "kind": "textures",
+      "name": "Concrete Tile Facade",
+      "authors": [
+        "Charlotte Baglioni"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/concrete_tile_facade",
+      "published": "2025-07-08",
+      "res": "2k",
+      "files": [
+        "concrete_tile_facade_diff_2k.jpg",
+        "concrete_tile_facade_nor_gl_2k.jpg",
+        "concrete_tile_facade_rough_2k.jpg",
+        "concrete_tile_facade_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "container_side",
+      "kind": "textures",
+      "name": "Container Side",
+      "authors": [
+        "Dimitrios Savva"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/container_side",
+      "published": "2023-08-01",
+      "res": "2k",
+      "files": [
+        "container_side_diff_2k.jpg",
+        "container_side_nor_gl_2k.jpg",
+        "container_side_rough_2k.jpg",
+        "container_side_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "corrugated_iron_02",
+      "kind": "textures",
+      "name": "Corrugated Iron 02",
+      "authors": [
+        "Jenelle van Heerden",
+        "Sergej Majboroda"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/corrugated_iron_02",
+      "published": "2023-11-30",
+      "res": "2k",
+      "files": [
+        "corrugated_iron_02_diff_2k.jpg",
+        "corrugated_iron_02_nor_gl_2k.jpg",
+        "corrugated_iron_02_rough_2k.jpg",
+        "corrugated_iron_02_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "metal_plate",
+      "kind": "textures",
+      "name": "Metal Plate",
+      "authors": [
+        "Rob Tuytel"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/metal_plate",
+      "published": "2018-06-20",
+      "res": "2k",
+      "files": [
+        "metal_plate_diff_2k.jpg",
+        "metal_plate_nor_gl_2k.jpg",
+        "metal_plate_rough_2k.jpg",
+        "metal_plate_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "metal_plate_02",
+      "kind": "textures",
+      "name": "Metal Plate 02",
+      "authors": [
+        "Rob Tuytel"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/metal_plate_02",
+      "published": "2024-08-15",
+      "res": "2k",
+      "files": [
+        "metal_plate_02_diff_2k.jpg",
+        "metal_plate_02_nor_gl_2k.jpg",
+        "metal_plate_02_rough_2k.jpg",
+        "metal_plate_02_ao_2k.jpg"
+      ]
+    },
+    {
+      "id": "rusty_metal_sheet",
+      "kind": "textures",
+      "name": "Rusty Metal Sheet",
+      "authors": [
+        "Amal Kumar"
+      ],
+      "license": "CC0 1.0",
+      "url": "https://polyhaven.com/a/rusty_metal_sheet",
+      "published": "2023-08-22",
+      "res": "2k",
+      "files": [
+        "rusty_metal_sheet_diff_2k.jpg",
+        "rusty_metal_sheet_nor_gl_2k.jpg",
+        "rusty_metal_sheet_rough_2k.jpg",
+        "rusty_metal_sheet_ao_2k.jpg"
+      ]
+    }
+  ]
+}
