@@ -22,8 +22,9 @@
 | Heat 0–3 | DONE | strip/hof shots, package +1, security **van** at 2, 4B decay |
 | Radio | DONE | Dark Synth FM / Late Night Talk (procedural), louder in vehicle |
 | Story COLD CARGO 0–3 | DONE | auto Beat 0 after title, extract VO + Dock-Wear persisted |
-| Weather / post | DONE | rain, steam, bloom 0.28, SMAA, vignette, grain |
-| Settings / a11y | DONE | mouse + touch look sens, auto-sprint, FOV, HUD, reduced FX, motion, color-assist, gyro off |
+| Weather / post | DONE | rain, steam, bloom 0.28, SMAA, vignette, grain, height fog, ripples, damage grade, colour-vision daltonize |
+| Immersive layer | DONE | env probe, light shafts, neon flicker, rim/bounce, impact FX, camera feel, ambience, story cards — `docs/IMMERSIVE.md` |
+| Settings / a11y | DONE | mouse + touch look sens, auto-sprint, FOV, HUD, reduced FX, motion, color-assist, colour-vision mode, touch button size, gyro off |
 | A07 gate | DONE | PASS WITH NOTES (2026-09-17, loop 2) |
 
 ## Current state
@@ -33,6 +34,7 @@ Phases 1–8 are frozen. The history of the individual loops has been removed fr
 - Render: WebGL2, ACES, PMREM env, presets AUTO/ULTRA/HIGH/MEDIUM/MOBILE (`src/core/Quality.js`). Desktop AUTO resolves to ULTRA, phones to MOBILE, strong phones to HIGH.
 - Post: bloom, film grade, vignette, grain; ULTRA/HIGH add lens chroma, split tone and rain-on-lens. MOBILE runs half-resolution bloom and adaptive pixel ratio.
 - Zones: `z < -16` docks, `z < 96` strip, owned by `src/world/layout.js`. Layout and quality self-tests pass.
+- Code: world chain on native `.mjs`; unreachable v2 duplicates removed (branch `immersive-rewrite`).
 - Packages: Android APK/AAB (Capacitor 8), Windows NSIS + portable (Electron), Linux AppImage + DEB (Electron). See `docs/BUILDS.md`.
 
 **Still open (not blocking):** box massing; procedural radio; interiors are volumes not scanned rooms; stairwell FP can clip wall thickness. ULTRA can miss 60 fps on a weak GPU — HIGH is the honest mid target. No real-device test on Android or Windows in this environment.

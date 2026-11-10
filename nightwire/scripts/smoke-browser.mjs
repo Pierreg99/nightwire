@@ -1,7 +1,8 @@
 // Headless browser smoke test for the production build (no extra npm dependencies).
 // Serves dist/ on 127.0.0.1, opens it in headless Chrome/Chromium via the DevTools protocol,
 // optionally emulates a phone (--mobile), clicks JACK IN, prints console errors and saves a frame.
-//   node scripts/smoke-browser.mjs [--mobile] [--out /tmp/nightwire-smoke.png]
+//   node scripts/smoke-browser.mjs [--mobile] [--out /tmp/nightwire-smoke.png] [--wait ms] [--quality mobile] [--phone]
+// Also fails on shader compile errors logged by three.js.
 // Exit 1 on uncaught exceptions, BOOT FAILED, or a missing WebGL2 context.
 import { spawn, spawnSync } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -16,6 +17,10 @@ const args = process.argv.slice(2);
 const mobile = args.includes('--mobile');
 const outIdx = args.indexOf('--out');
 const out = outIdx >= 0 ? args[outIdx + 1] : path.join(os.tmpdir(), `nightwire-smoke${mobile ? '-mobile' : ''}.png`);
+const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : def; };
+const waitMs = Number(opt('--wait', 5000));       // time after JACK IN before the frame
+const forceQuality = opt('--quality', '');        // e.g. --quality mobile (written to settings first)
+const openPhone = args.includes('--phone');       // open the phone before the frame (touch overlap check)
 
 if (!existsSync(path.join(dist, 'index.html'))) {
   console.error('dist/index.html missing. Run npm run build first.');
@@ -100,14 +105,25 @@ if (mobile) {
 await send('Page.navigate', { url });
 await sleep(6000);
 const evalJs = async (expr) => (await send('Runtime.evaluate', { expression: expr, returnByValue: true, awaitPromise: true })).result?.result?.value;
+if (forceQuality) {
+  await evalJs(`(() => { const k = 'nightwire.settings.v1'; const s = JSON.parse(localStorage.getItem(k) || '{}'); s.quality = ${JSON.stringify(forceQuality)}; localStorage.setItem(k, JSON.stringify(s)); })()`);
+  await send('Page.reload', {});
+  await sleep(6000);
+}
 await evalJs(`document.getElementById('btn-jack')?.click()`);
-await sleep(5000);
+await sleep(waitMs);
+if (openPhone) {
+  await evalJs(`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Tab' }))`);
+  await sleep(800);
+}
 const state = await evalJs(`JSON.stringify({
   webgl2: !!document.getElementById('c').getContext('webgl2'),
   bootError: document.getElementById('boot-error')?.classList.contains('hidden') ? '' : document.getElementById('boot-error')?.textContent,
   hud: !document.getElementById('hud')?.classList.contains('hidden'),
   touch: !document.getElementById('touch')?.classList.contains('hidden'),
   quality: document.getElementById('quality-readout')?.textContent || '',
+  phoneOpen: document.body.classList.contains('phone-open'),
+  fireVisible: !!document.getElementById('t-fire')?.offsetParent,
 })`);
 const shot = await send('Page.captureScreenshot', { format: 'png' });
 if (shot.result?.data) writeFileSync(out, Buffer.from(shot.result.data, 'base64'));
@@ -122,5 +138,7 @@ console.log(`404      ${[...new Set(notFound)].join(', ') || 'none'}`);
 console.log(`errors   ${errors.length ? errors.join('\n         ') : 'none'}`);
 for (const l of logs.filter((x) => /^\[(error|warning|warn)\]/.test(x)).slice(0, 20)) console.log(`console  ${l}`);
 console.log(`frame    ${out}`);
-const fail = errors.length > 0 || !!s.bootError || !s.webgl2 || !s.hud;
+const shaderErrors = logs.filter((x) => /Shader Error|WebGLProgram|not compiled/i.test(x));
+if (shaderErrors.length) console.log(`shader   ${shaderErrors.length} shader compile error(s)`);
+const fail = errors.length > 0 || shaderErrors.length > 0 || !!s.bootError || !s.webgl2 || !s.hud;
 process.exit(fail ? 1 : 0);
