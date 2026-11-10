@@ -299,7 +299,7 @@ body.phone-open #touch .tbtn:not(#t-phone):not(#t-pause) { display: none; }
 #subtitles .cursor { display: inline-block; width: 0.5em; color: var(--cyan); animation: sub-blink 0.8s steps(2) infinite; }
 @keyframes sub-blink { 50% { opacity: 0; } }
 /* Touch layout: card goes top-centre, out from under the stick and the thumb buttons. */
-body.touch-on .cine-card { left: 50%; bottom: auto; top: 17vh; transform: translate(-50%, 8px); text-align: center; white-space: nowrap; }
+body.touch-on .cine-card { left: 50%; bottom: auto; top: 31vh; transform: translate(-50%, 8px); text-align: center; white-space: nowrap; }
 body.touch-on .cine-card.show { transform: translate(-50%, 0); }
 body.touch-on .cine-title { font-size: clamp(18px, 3.4vw, 30px); }
 body.touch-on .cine-bar { height: 7vh; }

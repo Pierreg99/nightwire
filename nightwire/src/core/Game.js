@@ -10,6 +10,7 @@ import { createCamera } from './camera.js';
 import { createTextures } from '../world/textures.mjs';
 import { World } from '../world/World.mjs';
 import { buildCity } from '../world/city.mjs';
+import { dressCity } from '../world/dressing.mjs';
 import { Heat } from '../world/Heat.mjs';
 import { FPSController } from '../player/FPSController.js';
 import { Health } from '../player/Health.js';
@@ -39,6 +40,7 @@ import { applyShaftProfile } from '../fx/LightShafts.mjs';
 import { applyWetProfile } from '../fx/wetAsphalt.mjs';
 import { StoryPresenter } from '../ui/StoryPresenter.mjs';
 import { applyTouchScale } from '../ui/pause.js';
+import { photo } from './photo.mjs';
 
 export class Game {
   constructor() {
@@ -97,6 +99,7 @@ export class Game {
 
     this.world = new World(this);
     buildCity(this.world);
+    this.dressing = dressCity(this.world, this.qualityProfile);
 
     this.player = new FPSController(this);
     this.player.spawn(this.world.spawns.player);
@@ -150,6 +153,10 @@ export class Game {
     this.resize();
     document.getElementById('boot-splash')?.classList.add('hidden');
     this.renderer.setAnimationLoop(() => this.frame());
+  }
+
+  photo(kind, type) {
+    return photo(this, kind, type);
   }
 
   _bindUi() {
@@ -308,6 +315,19 @@ export class Game {
       }
     }
 
+    // Photo hook (smoke screenshots / devtools): a callback owns the camera, the world keeps living.
+    if (this.photoMode) {
+      this.npcs.update(dt);
+      this.weather.update(dt);
+      this.fx.update(dt);
+      this.photoMode(this.camera, dt);
+      this.presenter.update(dt);
+      this.dressing?.update(dt * 4, this.world.zoneAt(this.player.pos.z));
+      this.envProbe?.update(dt);
+      this.post.render(dt);
+      return;
+    }
+
     if (this.mode === 'title') {
       this.titleT += dt;
       const t = this.titleT;
@@ -356,12 +376,12 @@ export class Game {
       this.fx.update(dt);
       this.weather.update(dt);
       this.prompt.update();
-      this.moon.target.position.copy(this.player.pos);
       this.rim.target.position.copy(this.player.pos);
       this.rim.position.set(this.player.pos.x + 30, 18, this.player.pos.z - 60);
       this.bounce.target.position.copy(this.player.pos);
       this.bounce.position.set(this.player.pos.x, this.player.pos.y - 20, this.player.pos.z + 6);
       this.audio.updateAmbience?.(dt, this.hud?.zone);
+      this.dressing?.update(dt, this.hud?.zone);
       this.bodyShadow.position.set(this.player.pos.x, this.player.pos.y + 0.04, this.player.pos.z);
       this.audio.setListener(this.player.pos);
     } else {
@@ -375,7 +395,13 @@ export class Game {
     this.hud.update(dt);
     this.phone.update();
     this.skinEditor.renderPreview();
-    this.moon.position.set(this.player.pos.x - 40, 50, this.player.pos.z + 18);
+    // Shadow camera follows the player, snapped to whole shadow texels (no shimmering edges).
+    const qp = this.qualityProfile;
+    const ts = qp.shadow > 0 ? (2 * (qp.shadowRadius || 30)) / qp.shadow : 0.05;
+    const sx = Math.round(this.player.pos.x / ts) * ts;
+    const sz = Math.round(this.player.pos.z / ts) * ts;
+    this.moon.position.set(sx - 40, 50, sz + 18);
+    this.moon.target.position.set(sx, 0, sz);
 
     if (this.mode === 'play' && this.gfx.adapt(dt, this.camera)) {
       const el = document.getElementById('quality-readout');
