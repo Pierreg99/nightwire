@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { WEAPONS, KNIFE } from './defs.js';
 import { pullTrigger } from './trigger.js';
 import { makeViewmodel, makeGun, applyViewSkin } from './Viewmodel.js';
-import { LOOK } from '../fx/look.js';
+import { LOOK } from '../fx/look.mjs';
 
 export class WeaponSystem {
   constructor(game) {

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { LOOK } from './look.js';
+import { LOOK } from './look.mjs';
 
 /** Inside the camera far plane (420). Follows the camera so the horizon stays centered. */
 const DOME_RADIUS = 340;

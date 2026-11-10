@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { boxMesh } from '../world/props.js';
-import { LOOK } from '../fx/look.js';
+import { boxMesh } from '../world/props.mjs';
+import { LOOK } from '../fx/look.mjs';
 
 function presentHeld(root) {
   root.frustumCulled = false;

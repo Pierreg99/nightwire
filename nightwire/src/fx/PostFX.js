@@ -4,7 +4,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
-import { LOOK } from './look.js';
+import { LOOK } from './look.mjs';
 
 // Linear grade. OutputPass is the only tone-map. Do not encode sRGB here.
 const GRADE = LOOK.grade.map((n) => n.toFixed(4)).join(', ');

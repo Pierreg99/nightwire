@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { mat, boxMesh } from '../world/props.js';
+import { mat, boxMesh } from '../world/props.mjs';
 
 export class VehicleSystem {
   constructor(game) {

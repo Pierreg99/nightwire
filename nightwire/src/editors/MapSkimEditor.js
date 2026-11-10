@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { addCover, addLamp, boxMesh, mat } from '../world/props.js';
+import { addCover, addLamp, boxMesh, mat } from '../world/props.mjs';
 import { lockPointer, unlockPointer } from '../core/Input.js';
 
 const PALETTE = ['cover', 'light', 'vehicle', 'npc', 'trigger', 'landmark'];

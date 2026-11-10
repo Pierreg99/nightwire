@@ -5,10 +5,10 @@ import { loadSettings, saveSettings } from './Settings.js';
 import { detectEnv, resolveProfile, applyLightBudget } from './Quality.js';
 import { Bus } from './math.js';
 import { createCamera } from './camera.js';
-import { createTextures } from '../world/textures.js';
-import { World } from '../world/World.js';
-import { buildCity } from '../world/city.js';
-import { Heat } from '../world/Heat.js';
+import { createTextures } from '../world/textures.mjs';
+import { World } from '../world/World.mjs';
+import { buildCity } from '../world/city.mjs';
+import { Heat } from '../world/Heat.mjs';
 import { FPSController } from '../player/FPSController.js';
 import { Health } from '../player/Health.js';
 import { Stamina } from '../player/Stamina.js';
@@ -29,7 +29,7 @@ import { AudioEngine } from '../audio/AudioEngine.js';
 import { CombatFX } from '../fx/CombatFX.js';
 import { Weather } from '../fx/Weather.js';
 import { RenderPipeline, frameSize, requestStage } from '../fx/RenderPipeline.js';
-import { LOOK } from '../fx/look.js';
+import { LOOK } from '../fx/look.mjs';
 import { addSkyDome } from '../fx/sky.js';
 
 export class Game {
