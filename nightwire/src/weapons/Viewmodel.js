@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { boxMesh } from '../world/props.mjs';
 import { LOOK } from '../fx/look.mjs';
+import { FPArms } from './FPArms.mjs';
 
 function presentHeld(root) {
   root.frustumCulled = false;
@@ -17,46 +18,12 @@ function presentHeld(root) {
 
 export function makeViewmodel(skin, weaponDef) {
   const root = new THREE.Group();
-  const arms = new THREE.Group();
-  arms.name = 'arms';
-  const jacket = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(skin.jacket), roughness: 0.62, metalness: 0.08,
-  });
-  const glove = new THREE.MeshStandardMaterial({ color: 0x121416, roughness: 0.5, metalness: 0.12 });
-
-  const lArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.38, 3, 6), jacket);
-  lArm.rotation.x = 1.2;
-  lArm.position.set(-0.22, -0.18, -0.28);
-  lArm.castShadow = true;
-  const lHand = boxMesh(0.075, 0.07, 0.1, glove);
-  lHand.position.set(-0.22, -0.28, -0.52);
-  const tattoo = boxMesh(0.09, 0.015, 0.12, new THREE.MeshStandardMaterial({
-    color: skin.tattoo, emissive: skin.tattoo, emissiveIntensity: 0.4 + skin.glow,
-  }));
-  tattoo.position.set(-0.22, -0.2, -0.36);
-  tattoo.name = 'tattoo';
-  const watch = boxMesh(0.1, 0.04, 0.06, new THREE.MeshStandardMaterial({ color: 0x222, metalness: 0.8, roughness: 0.3 }));
-  watch.position.set(-0.22, -0.24, -0.44);
-
-  const rArm = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.42, 3, 6), jacket);
-  rArm.rotation.x = 1.05;
-  rArm.position.set(0.18, -0.2, -0.32);
-  rArm.castShadow = true;
-  const rHand = boxMesh(0.075, 0.07, 0.1, glove);
-  rHand.position.set(0.16, -0.26, -0.55);
-
-  arms.add(lArm, lHand, tattoo, watch, rArm, rHand);
-  const accent = boxMesh(0.13, 0.04, 0.18, new THREE.MeshStandardMaterial({
-    color: skin.jacketAccent, emissive: skin.jacketAccent, emissiveIntensity: 0.25,
-  }));
-  accent.position.set(-0.22, -0.14, -0.22);
-  accent.name = 'accent';
-  arms.add(accent);
-  root.add(arms);
+  // Hands, wrists and sleeves: see FPArms (anchored to the gun every frame).
+  root.userData.arms = new FPArms(root, skin);
 
   const gun = makeGun(weaponDef, skin);
   gun.name = 'gun';
-  gun.position.set(0.12, -0.22, -0.48);
+  gun.position.set(0.15, -0.14, -0.46);
   root.add(gun);
 
   const knife = new THREE.Group();
@@ -203,12 +170,5 @@ export function applyViewSkin(root, skin) {
       o.material.emissive.set(skin.charm);
     }
   });
-  const arms = root.getObjectByName('arms');
-  if (arms) {
-    arms.children.forEach((c) => {
-      if (c.material && c.name !== 'tattoo' && c.name !== 'accent' && c.geometry?.parameters?.depth > 0.3) {
-        c.material.color.set(skin.jacket);
-      }
-    });
-  }
+  root.userData.arms?.setSkin(skin);
 }

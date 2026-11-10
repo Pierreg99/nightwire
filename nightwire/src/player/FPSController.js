@@ -51,6 +51,7 @@ export class FPSController {
     const g = this.game;
     if (this.inVehicle) return;
     const look = g.input.consumeLook();
+    this.lookDelta = look;
     this.yaw -= look.x;
     this.pitch = clamp(this.pitch - look.y, -1.45, 1.45);
 

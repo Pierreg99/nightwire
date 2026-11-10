@@ -40,7 +40,7 @@ export class WeaponSystem {
     if (old) this.vm.remove(old);
     const gun = makeGun(this.def, this.game.skins.identity);
     gun.name = 'gun';
-    gun.position.set(0.12, -0.22, -0.48);
+    gun.position.set(0.15, -0.14, -0.46);
     this.vm.add(gun);
     applyViewSkin(this.vm, this.game.skins.identity);
   }
@@ -107,7 +107,7 @@ export class WeaponSystem {
       } else this.shoot();
     }
 
-    const hip = new THREE.Vector3(0.12, -0.22, -0.48);
+    const hip = new THREE.Vector3(0.15, -0.14, -0.46);
     const ads = new THREE.Vector3(0.0, -0.145, -0.32);
     const gun = this.vm.getObjectByName('gun');
     if (gun) {
@@ -115,8 +115,20 @@ export class WeaponSystem {
       gun.rotation.x = -this.kick * 0.4;
       gun.position.z += this.kick * 0.04;
     }
-    const sway = g.settings.motion ? Math.sin(g.time.elapsed * 1.4) * 0.004 : 0;
-    this.vm.position.set(sway, Math.sin(g.player.bob) * 0.01, 0);
+    if (g.input.pressed('KeyI') && !this.reloading) this.inspect();
+    const arms = this.vm.userData.arms;
+    if (gun && arms) {
+      arms.update(gun, this.def.type, {
+        dt,
+        look: g.player.lookDelta || { x: 0, y: 0 },
+        bob: g.player.bob,
+        moving: (g.player._speed || 0) > 1.2 && g.player.onGround,
+        sprint: g.player.sprint && (g.player._speed || 0) > 3.5,
+        ads: this.ads,
+        reload: this.reloading > 0 ? 1 - this.reloading / this.def.reload : -1,
+        motion: !!g.settings.motion,
+      });
+    }
     const knife = this.vm.getObjectByName('knife');
     if (knife) {
       knife.visible = this.meleeT > 0.05;
@@ -172,6 +184,10 @@ export class WeaponSystem {
       g.fx.impact(end, worldHit.normal, false);
     }
     g.fx.tracer(this._origin.clone().add(this._dir.clone().multiplyScalar(0.6)), end, LOOK.tracer[this.def.type] || LOOK.tracer.rifle);
+  }
+
+  inspect() {
+    this.vm.userData.arms?.inspect();
   }
 
   melee() {
