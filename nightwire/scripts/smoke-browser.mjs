@@ -21,6 +21,16 @@ const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 ? args[
 const waitMs = Number(opt('--wait', 5000));       // time after JACK IN before the frame
 const forceQuality = opt('--quality', '');        // e.g. --quality mobile (written to settings first)
 const openPhone = args.includes('--phone');       // open the phone before the frame (touch overlap check)
+const shotKind = opt('--shot', '');               // face | hands: close-up camera via window.__nightwire.photoMode
+const SHOTS = {
+  face: `window.__nightwire.photo('face', ${JSON.stringify(opt('--type', 'civil'))})`,
+  body: `window.__nightwire.photo('body', ${JSON.stringify(opt('--type', 'crew'))})`,
+  hands: `window.__nightwire.photo('hands')`,
+  inspect: `window.__nightwire.photo('inspect')`,
+  strip: `window.__nightwire.photo('strip')`,
+  hof: `window.__nightwire.photo('hof')`,
+  docks: `window.__nightwire.photo('docks')`,
+};
 
 if (!existsSync(path.join(dist, 'index.html'))) {
   console.error('dist/index.html missing. Run npm run build first.');
@@ -112,6 +122,12 @@ if (forceQuality) {
 }
 await evalJs(`document.getElementById('btn-jack')?.click()`);
 await sleep(waitMs);
+const evalExpr = opt('--eval', '');               // devtools expression, result printed (debugging)
+if (evalExpr) console.log(`eval     ${JSON.stringify(await evalJs(evalExpr))}`);
+if (shotKind) {
+  console.log(`shot     ${shotKind}: ${await evalJs(SHOTS[shotKind])}`);
+  await sleep(shotKind === 'inspect' ? 900 : shotKind === 'hands' ? 600 : 2500);
+}
 if (openPhone) {
   await evalJs(`window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Tab' }))`);
   await sleep(800);
@@ -144,5 +160,5 @@ for (const l of logs.filter((x) => /^\[(error|warning|warn)\]/.test(x)).slice(0,
 console.log(`frame    ${out}`);
 const shaderErrors = logs.filter((x) => /Shader Error|WebGLProgram|not compiled/i.test(x));
 if (shaderErrors.length) console.log(`shader   ${shaderErrors.length} shader compile error(s)`);
-const fail = errors.length > 0 || shaderErrors.length > 0 || !!s.bootError || !s.webgl2 || !s.hud;
+const fail = errors.length > 0 || shaderErrors.length > 0 || !!s.bootError || !s.webgl2 || (!s.hud && !shotKind);
 process.exit(fail ? 1 : 0);
