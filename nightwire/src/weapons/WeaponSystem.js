@@ -18,6 +18,8 @@ export class WeaponSystem {
     this.kick = 0;
     this.meleeT = 0;
     this._held = false;
+    this.recoilDebt = 0;
+    this.recoverT = 0;
     this.vm = makeViewmodel(game.skins.identity, this.def);
     this.vm.visible = false;
     game.camera.add(this.vm);
@@ -89,6 +91,13 @@ export class WeaponSystem {
     if ((g.input.pressed('KeyG') || g.input.pressed('KeyV')) && this.meleeT <= 0) this.melee();
 
     const held = (g.input.fire || g.touchFire || g.input.padFire) && !g.input.blocked;
+    // Recoil recovery: ~55 % of the climb drifts back once the trigger rests.
+    this.recoverT = held ? 0 : this.recoverT + dt;
+    if (this.recoverT > 0.09 && Math.abs(this.recoilDebt) > 1e-4) {
+      const back = this.recoilDebt * (1 - Math.exp(-9 * dt));
+      g.player.pitch -= back;
+      this.recoilDebt -= back;
+    }
     const firing = pullTrigger(this.def.mode || 'auto', held, this._held);
     this._held = held;
     if (firing && this.cooldown <= 0 && this.reloading <= 0) {
@@ -121,12 +130,16 @@ export class WeaponSystem {
     this.cooldown = 60 / this.def.rpm;
     const rec = this.def.recoil[this.recoilI % this.def.recoil.length];
     this.recoilI++;
-    g.player.pitch += rec[1] * 0.045 * this.def.kick;
+    const climb = rec[1] * 0.045 * this.def.kick;
+    g.player.pitch += climb;
+    this.recoilDebt += climb * 0.55;
     g.player.yaw += rec[0] * 0.05 * this.def.kick;
     this.kick = 1;
     g.player.fovPunch = 1.6;
     g.audio?.gun(this.def.type, g.player.pos);
-    g.fx.muzzle(g.camera);
+    g.fx.muzzle(g.camera, this.def.type);
+    g.player.addTrauma?.(0.08 + this.def.kick * 0.1);
+    g.neon?.react(g.player.pos, 0.6 + this.def.kick * 0.4);
     const pellets = this.def.pellets || 1;
     for (let i = 0; i < pellets; i++) this._pellet();
     g.heat?.onShot();
@@ -151,10 +164,12 @@ export class WeaponSystem {
       g.hud.hitmarker(head);
       g.audio?.impact(true, end);
       g.fx.decal(end, npcHit.normal || this._dir.clone().negate(), true);
+      g.fx.impact(end, npcHit.normal || this._dir.clone().negate(), true);
     } else if (worldHit) {
       end = worldHit.point;
       g.audio?.impact(false, end);
       g.fx.decal(end, worldHit.normal, false);
+      g.fx.impact(end, worldHit.normal, false);
     }
     g.fx.tracer(this._origin.clone().add(this._dir.clone().multiplyScalar(0.6)), end, LOOK.tracer[this.def.type] || LOOK.tracer.rifle);
   }

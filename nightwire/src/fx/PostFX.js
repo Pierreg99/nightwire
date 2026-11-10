@@ -19,6 +19,8 @@ const GradeShader = {
     chroma: { value: 0 },
     lensRain: { value: 0 },
     splitTone: { value: 0 },
+    hurt: { value: 0 },
+    cvd: { value: 0 },
   },
   vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
   fragmentShader: `
@@ -31,7 +33,23 @@ const GradeShader = {
     uniform float chroma;
     uniform float lensRain;
     uniform float splitTone;
+    uniform float hurt;
+    uniform float cvd;
     varying vec2 vUv;
+    // Daltonize (colour-vision setting): simulate the deficiency in LMS, push the lost contrast
+    // into channels the viewer still separates. 1 deuteranopia, 2 protanopia, 3 tritanopia.
+    vec3 daltonize(vec3 c, float mode){
+      mat3 toLms = mat3(17.8824, 3.45565, 0.0299566, 43.5161, 27.1554, 0.184309, 4.11935, 3.86714, 1.46709);
+      mat3 toRgb = mat3(0.0809444479, -0.0102485335, -0.000365296938, -0.130504409, 0.0540193266, -0.00412161469, 0.116721066, -0.113614708, 0.693511405);
+      vec3 lms = toLms * c;
+      vec3 s = lms;
+      if (mode < 1.5) s = vec3(lms.x, 0.494207 * lms.x + 1.24827 * lms.z, lms.z);
+      else if (mode < 2.5) s = vec3(2.02344 * lms.y - 2.52581 * lms.z, lms.y, lms.z);
+      else s = vec3(lms.x, lms.y, -0.395913 * lms.x + 0.801109 * lms.y);
+      vec3 err = c - toRgb * s;
+      vec3 shift = vec3(0.0, err.r * 0.7 + err.g, err.r * 0.7 + err.b);
+      return c + shift;
+    }
     float rand(vec2 co){ return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453); }
     float luma(vec3 c){ return dot(c, vec3(0.2126, 0.7152, 0.0722)); }
     // Rain on the lens: sparse drops in a sliding grid refract the frame a little. One cell lookup, no textures.
@@ -74,7 +92,15 @@ const GradeShader = {
         c *= mix(vec3(1.0), tint, clamp(splitTone * 5.0, 0.0, 1.0));
       }
       float d = distance(vUv, vec2(0.5));
+      if (hurt > 0.001) {
+        // Damage: colour drains toward the centre, a red pulse closes in from the edges.
+        float l = luma(c);
+        c = mix(c, vec3(l * 1.08, l * 0.86, l * 0.86), hurt * 0.45);
+        c += vec3(0.16, 0.0, 0.015) * smoothstep(0.25, 0.85, d) * hurt;
+        c *= 1.0 - smoothstep(0.3, 1.0, d) * hurt * 0.35;
+      }
       c *= 1.0 - smoothstep(0.45, 1.15, d) * vignette;
+      if (cvd > 0.5) c = max(daltonize(c, cvd), 0.0);
       c += (rand(vUv * resolution + time) - 0.5) * grain;
       gl_FragColor = vec4(max(c, 0.0), 1.0);
     }
@@ -144,6 +170,15 @@ export class PostFX {
     this.film.uniforms.lensRain.value = reduced || !motion || this.game.mode === 'skim' ? 0 : (p.lensRain || 0);
     this.film.uniforms.chroma.value = reduced ? 0 : (p.chroma || 0);
     this.film.uniforms.time.value = this.game.time.elapsed;
+    const h = this.game.health;
+    let hurt = 0;
+    if (h && this.game.mode !== 'title') {
+      const low = h.hp < 35 ? (1 - h.hp / 35) * (0.45 + 0.25 * Math.sin(this.game.time.elapsed * 5.2)) : 0;
+      hurt = Math.min(1, Math.max(h.hurt * 0.85, low));
+      if (reduced) hurt *= 0.5;
+    }
+    this.film.uniforms.hurt.value = hurt;
+    this.film.uniforms.cvd.value = { deuteranopia: 1, protanopia: 2, tritanopia: 3 }[this.game.settings.colorMode] || 0;
     try {
       this.composer.render();
     } catch (err) {
