@@ -23,6 +23,7 @@
 | Radio | DONE | Dark Synth FM / Late Night Talk (procedural), louder in vehicle |
 | Story COLD CARGO 0–3 | DONE | auto Beat 0 after title, extract VO + Dock-Wear persisted |
 | Weather / post | DONE | rain, steam, bloom 0.28, SMAA, vignette, grain, height fog, ripples, damage grade, colour-vision daltonize |
+| Humans + animation + city dressing (2nd pass) | DONE | skinned procedural humans, FP hands, GTAO/DOF/motion blur, dressing — `docs/IMMERSIVE.md` |
 | Immersive layer | DONE | env probe, light shafts, neon flicker, rim/bounce, impact FX, camera feel, ambience, story cards — `docs/IMMERSIVE.md` |
 | Settings / a11y | DONE | mouse + touch look sens, auto-sprint, FOV, HUD, reduced FX, motion, color-assist, colour-vision mode, touch button size, gyro off |
 | A07 gate | DONE | PASS WITH NOTES (2026-09-17, loop 2) |
