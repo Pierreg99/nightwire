@@ -97,4 +97,24 @@ const fixed = createAdaptiveScale(PROFILES.ultra, 30);
 for (let i = 0; i < 240; i++) fixed.update(0.05);
 assert.equal(fixed.scale, 1, 'ULTRA never rescales on its own');
 
-console.log('quality + pad + trigger + env + adaptive self-test ok');
+// Immersive layer: every preset defines every field, costs fall from ULTRA to MOBILE.
+const IMMERSIVE = ['envProbe', 'probeSize', 'shafts', 'ripples', 'wetNormals', 'neonFlicker', 'rim', 'impactParticles', 'ambience'];
+for (const p of Object.values(PROFILES)) {
+  for (const k of IMMERSIVE) assert.ok(p[k] !== undefined, `${p.id}.${k} missing`);
+}
+assert.equal(PROFILES.mobile.envProbe, 0, 'no live reflection probe on MOBILE / APK');
+assert.equal(PROFILES.medium.envProbe, 0);
+assert.ok(PROFILES.ultra.envProbe > 0 && PROFILES.ultra.envProbe <= PROFILES.high.envProbe, 'ULTRA refreshes reflections at least as often as HIGH');
+assert.equal(PROFILES.mobile.shafts, false, 'light cones off on MOBILE / APK');
+assert.equal(PROFILES.mobile.ripples, 0, 'no puddle ripple shader work on MOBILE / APK');
+assert.equal(PROFILES.mobile.wetNormals, 0);
+const order = ['ultra', 'high', 'medium', 'mobile'];
+for (let i = 1; i < order.length; i++) {
+  const a = PROFILES[order[i - 1]];
+  const b = PROFILES[order[i]];
+  assert.ok(b.impactParticles <= a.impactParticles, `${b.id} impact particles <= ${a.id}`);
+  assert.ok(b.ripples <= a.ripples && b.wetNormals <= a.wetNormals && b.neonFlicker <= a.neonFlicker);
+  assert.ok(b.probeSize <= a.probeSize);
+}
+
+console.log('quality + pad + trigger + env + adaptive + immersive self-test ok');

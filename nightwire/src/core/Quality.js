@@ -28,6 +28,15 @@ export const PROFILES = {
     adaptive: false,
     minScale: 1,
     rainStreak: 0.42,
+    envProbe: 1.0,
+    probeSize: 128,
+    shafts: true,
+    ripples: 1,
+    wetNormals: 0.35,
+    neonFlicker: 1,
+    rim: 0.42,
+    impactParticles: 28,
+    ambience: 1,
   },
   high: {
     id: 'high',
@@ -58,6 +67,15 @@ export const PROFILES = {
     adaptive: false,
     minScale: 1,
     rainStreak: 0.36,
+    envProbe: 2.0,
+    probeSize: 96,
+    shafts: true,
+    ripples: 1,
+    wetNormals: 0.3,
+    neonFlicker: 1,
+    rim: 0.38,
+    impactParticles: 20,
+    ambience: 1,
   },
   medium: {
     id: 'medium',
@@ -88,6 +106,15 @@ export const PROFILES = {
     adaptive: true,
     minScale: 0.7,
     rainStreak: 0.3,
+    envProbe: 0,
+    probeSize: 64,
+    shafts: true,
+    ripples: 0.6,
+    wetNormals: 0.22,
+    neonFlicker: 0.8,
+    rim: 0.32,
+    impactParticles: 12,
+    ambience: 1,
   },
   mobile: {
     id: 'mobile',
@@ -118,6 +145,15 @@ export const PROFILES = {
     adaptive: true,
     minScale: 0.6,
     rainStreak: 0.24,
+    envProbe: 0,
+    probeSize: 64,
+    shafts: false,
+    ripples: 0,
+    wetNormals: 0,
+    neonFlicker: 0.6,
+    rim: 0.26,
+    impactParticles: 6,
+    ambience: 0.7,
   },
 };
 
@@ -195,6 +231,6 @@ export function applyLightBudget(game, max) {
   ranked.forEach((row, i) => {
     const on = i < max;
     row.l.visible = on;
-    row.l.intensity = on ? row.l.userData.baseIntensity : 0;
+    row.l.intensity = on && !row.l.userData.off ? row.l.userData.baseIntensity : 0;
   });
 }
