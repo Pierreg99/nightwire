@@ -121,6 +121,49 @@ export class FPArms {
 
   setSkin(skin) {
     this.sleeveMat.color.set(skin.jacket);
+    if (this.real) this.real.sleeveMat?.color.set(skin.jacket).lerp(new THREE.Color(0xffffff), 0.35);
+  }
+
+  /**
+   * Swap the procedural gloves / tube sleeves for the baked MakeHuman hands and jacket sleeves
+   * (AssetHuman.bakeHandGeometry). The IK, anchors and animation layers stay exactly the same.
+   * @param baked { r, l } each { hand, sleeve, restLen, skinMat, sleeveMat }
+   */
+  useRealHands(baked) {
+    if (!baked?.r?.hand || !baked?.l?.hand) return false;
+    const skinMat = baked.r.skinMat.clone();
+    skinMat.envMapIntensity = 0.7;
+    const sleeveMat = baked.r.sleeveMat ? baked.r.sleeveMat.clone() : null;
+    if (sleeveMat) sleeveMat.color.copy(this.sleeveMat.color).lerp(new THREE.Color(0xffffff), 0.35);
+    this.real = { skinMat, sleeveMat, restLen: {} };
+    for (const s of ['r', 'l']) {
+      const b = baked[s];
+      const wrist = this.hands[s];
+      for (const c of [...wrist.children]) {
+        if (c.name === 'hand' || (!c.name && c.material === this.glove) || c.material === this.skinMat) c.visible = false;
+      }
+      const hand = new THREE.Mesh(b.hand, skinMat);
+      hand.name = 'real-hand';
+      hand.castShadow = false;
+      wrist.add(hand);
+      const tube = this.sleeves[s];
+      if (b.sleeve && sleeveMat) {
+        tube.visible = false;
+        const sleeve = new THREE.Mesh(b.sleeve, sleeveMat);
+        sleeve.name = 'real-sleeve';
+        this.root.add(sleeve);
+        this.real[s] = sleeve;
+        this.real.restLen[s] = b.restLen;
+        // The real jacket forearm is ~13 cm across; at viewmodel distance that reads as a pipe in
+        // front of the gun. Slim it to the FP rig's sleeve girth (just over the wrist) like every FPS.
+        b.sleeve.computeBoundingBox();
+        const bb = b.sleeve.boundingBox;
+        const rad = ((bb.max.x - bb.min.x) + (bb.max.z - bb.min.z)) / 4;
+        this.real.girth = this.real.girth || {};
+        this.real.girth[s] = rad > 0 ? 0.043 / rad : 1;
+      }
+    }
+    return true;
   }
 
   inspect() { if (this.inspectT <= 0) this.inspectT = 2.4; }
@@ -197,6 +240,16 @@ export class FPArms {
       _a.set(0, 0.065, 0).applyQuaternion(w.quaternion).add(w.position);
       _b.copy(this.elbow[s]);
       _b.x += this.sway.x * 0.5; _b.y += this.sway.y * 0.4 - this.sprintK * 0.05;
+      const real = this.real?.[s];
+      if (real) {
+        // baked sleeve: wrist at the origin, +Y up the forearm; stretch only along the arm
+        _a.set(0, 0.012, 0).applyQuaternion(w.quaternion).add(w.position);
+        real.position.copy(_a);
+        real.quaternion.setFromUnitVectors(UP, _b.clone().sub(_a).normalize());
+        const gk = this.real.girth?.[s] ?? 1;
+        real.scale.set(gk, Math.max(0.6, _a.distanceTo(_b) / this.real.restLen[s]), gk);
+        continue;
+      }
       const sl = this.sleeves[s];
       const len = _a.distanceTo(_b);
       sl.position.copy(_a);
