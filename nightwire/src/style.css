@@ -210,27 +210,30 @@ h1 {
 .stick i {
   position: absolute; width: 48px; height: 48px; border-radius: 50%;
   background: rgba(220,231,240,0.35); left: 33px; top: 33px;
+  will-change: transform; pointer-events: none;
 }
-#look-pad { pointer-events: auto; position: absolute; right: 0; top: 18%; width: 42%; height: 55%; }
+#look-pad { pointer-events: auto; position: absolute; right: env(safe-area-inset-right); top: 18%; width: 42%; height: 55%; touch-action: none; }
 .tbtn {
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
   pointer-events: auto; position: absolute; width: 56px; height: 56px; border-radius: 50%;
   border: 1px solid rgba(220,231,240,0.3); background: rgba(8,10,16,0.4);
   color: #e8f4ff; font: inherit; letter-spacing: 0.08em; font-size: 11px;
+  scale: var(--tbtn-scale, 1);
 }
 .tbtn.fire {
   right: max(28px, env(safe-area-inset-right));
   bottom: max(36px, env(safe-area-inset-bottom));
   width: 78px; height: 78px; background: rgba(255,45,106,0.28);
 }
-#t-ads { right: 118px; bottom: 44px; }
-#t-reload { right: 36px; bottom: 128px; }
-#t-jump { right: 168px; bottom: 110px; }
-#t-crouch { left: 160px; bottom: 36px; }
-#t-use { left: 50%; bottom: 22px; transform: translateX(-50%); }
-#t-veh { left: 160px; bottom: 100px; }
+#t-ads { right: calc(118px + env(safe-area-inset-right)); bottom: calc(44px + env(safe-area-inset-bottom)); }
+#t-reload { right: calc(36px + env(safe-area-inset-right)); bottom: calc(128px + env(safe-area-inset-bottom)); }
+#t-jump { right: calc(168px + env(safe-area-inset-right)); bottom: calc(110px + env(safe-area-inset-bottom)); }
+#t-crouch { left: calc(160px + env(safe-area-inset-left)); bottom: calc(36px + env(safe-area-inset-bottom)); }
+#t-use { left: 50%; bottom: calc(22px + env(safe-area-inset-bottom)); transform: translateX(-50%); }
+#t-veh { left: calc(160px + env(safe-area-inset-left)); bottom: calc(100px + env(safe-area-inset-bottom)); }
 #t-phone { right: max(18px, env(safe-area-inset-right)); top: max(18px, env(safe-area-inset-top)); width: 44px; height: 44px; }
 #t-pause { left: max(18px, env(safe-area-inset-left)); top: max(18px, env(safe-area-inset-top)); width: 44px; height: 44px; }
-#t-gun { left: 160px; bottom: 164px; }
+#t-gun { left: calc(160px + env(safe-area-inset-left)); bottom: calc(164px + env(safe-area-inset-bottom)); }
 
 #notify {
   position: absolute; top: 92px; left: 50%; transform: translateX(-50%);
@@ -249,4 +252,58 @@ h1 {
   #wardrobe-view { display: none; }
   .vitals { width: 140px; }
   #w-ammo { font-size: 22px; }
+}
+
+/* Touch layout on: keep HUD readouts out from under the thumbs and the II / PH buttons. */
+body.touch-on .hud-top {
+  left: calc(76px + env(safe-area-inset-left));
+  right: calc(76px + env(safe-area-inset-right));
+  top: max(18px, env(safe-area-inset-top));
+}
+body.touch-on .hud-bottom {
+  bottom: auto; top: calc(74px + env(safe-area-inset-top));
+  left: calc(76px + env(safe-area-inset-left));
+  right: calc(76px + env(safe-area-inset-right));
+  align-items: flex-start;
+}
+body.touch-on #killfeed { top: calc(150px + env(safe-area-inset-top)); right: calc(76px + env(safe-area-inset-right)); }
+body.touch-on #subtitles { bottom: calc(150px + env(safe-area-inset-bottom)); max-width: 52vw; }
+body.touch-on #w-ammo { font-size: 20px; }
+
+/* Phone open on touch: the combat cluster would sit on top of the phone. Hide it (inputs are
+   released in Phone.open), keep only PH (close) and II (pause). */
+body.phone-open #touch .stick,
+body.phone-open #touch #look-pad,
+body.phone-open #touch .tbtn:not(#t-phone):not(#t-pause) { display: none; }
+
+/* Story presentation: letterbox, location / zone cards, objective flash, typewriter subtitles. */
+#cine { position: absolute; inset: 0; pointer-events: none; }
+.cine-bar { position: absolute; left: 0; right: 0; height: 11vh; background: #000; transform: scaleY(0); transition: transform 900ms cubic-bezier(.2,.7,.2,1); }
+.cine-bar.top { top: 0; transform-origin: top; }
+.cine-bar.bottom { bottom: 0; transform-origin: bottom; }
+#cine.bars .cine-bar { transform: scaleY(1); }
+.cine-card {
+  position: absolute; left: max(6vw, env(safe-area-inset-left)); bottom: 18vh;
+  opacity: 0; transform: translateY(8px); transition: opacity 600ms ease, transform 600ms ease;
+  text-shadow: 0 2px 14px #000;
+}
+.cine-card.show { opacity: 1; transform: none; }
+.cine-kicker { font-size: 11px; letter-spacing: 0.42em; color: var(--mag); }
+.cine-title { font-size: clamp(22px, 4vw, 40px); letter-spacing: 0.22em; margin: 4px 0; }
+.cine-sub { font-size: 12px; letter-spacing: 0.28em; color: #9ab; }
+#objective.flash { animation: obj-flash 1.4s ease-out; }
+@keyframes obj-flash {
+  0% { color: #fff; text-shadow: 0 0 18px rgba(62,224,255,0.95); }
+  100% { text-shadow: 0 1px 8px #000; }
+}
+#subtitles .cursor { display: inline-block; width: 0.5em; color: var(--cyan); animation: sub-blink 0.8s steps(2) infinite; }
+@keyframes sub-blink { 50% { opacity: 0; } }
+/* Touch layout: card goes top-centre, out from under the stick and the thumb buttons. */
+body.touch-on .cine-card { left: 50%; bottom: auto; top: 31vh; transform: translate(-50%, 8px); text-align: center; white-space: nowrap; }
+body.touch-on .cine-card.show { transform: translate(-50%, 0); }
+body.touch-on .cine-title { font-size: clamp(18px, 3.4vw, 30px); }
+body.touch-on .cine-bar { height: 7vh; }
+@media (prefers-reduced-motion: reduce) {
+  .cine-bar, .cine-card { transition: none; }
+  #objective.flash { animation: none; }
 }

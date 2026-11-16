@@ -15,7 +15,7 @@ window.addEventListener('error', (e) => {
 window.addEventListener('unhandledrejection', (e) => showBootError(e.reason));
 
 try {
-  new Game();
+  window.__nightwire = new Game(); // handle for the smoke test / devtools
   document.getElementById('boot-splash')?.classList.add('hidden');
 } catch (err) {
   document.getElementById('boot-splash')?.classList.add('hidden');

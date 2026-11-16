@@ -14,6 +14,24 @@ const PAD_EDGES = [
   [15, 'PadNext'],
 ];
 
+/**
+ * Pointer lock that never throws: Android WebView / touch-only devices have no pointer lock,
+ * and newer Chromium returns a promise that rejects without a user gesture.
+ */
+export function lockPointer(el) {
+  if (!el?.requestPointerLock) return;
+  const mq = (q) => { try { return !!globalThis.matchMedia?.(q)?.matches; } catch { return false; } };
+  if (mq('(pointer: coarse)') && !mq('(any-pointer: fine)')) return;
+  try {
+    const pending = el.requestPointerLock();
+    pending?.catch?.(() => {});
+  } catch { /* unsupported or no gesture */ }
+}
+
+export function unlockPointer() {
+  try { document.exitPointerLock?.(); } catch { /* not locked */ }
+}
+
 export class Input {
   constructor(canvas, settings) {
     this.canvas = canvas;
@@ -36,6 +54,7 @@ export class Input {
     this.padAds = false;
     this.padSprint = false;
     this.weaponStep = 0;
+    this.lockFailed = false;
     this._gpPrev = {};
     this._bind();
   }
@@ -51,7 +70,10 @@ export class Input {
     on('keyup', (e) => this.keys.delete(e.code));
     on('blur', () => { this.keys.clear(); this.fire = false; });
     on('mousemove', (e) => {
-      if (!this.locked || this.blocked) return;
+      if (this.blocked) return;
+      // Fallback when pointer lock is refused (kiosk, remote desktop, some Linux WMs): drag to look.
+      const dragLook = this.lockFailed && (e.buttons & 1) && e.target === this.canvas;
+      if (!this.locked && !dragLook) return;
       const s = this.ads ? this.settings.adsSens : this.settings.sens;
       this.dx += e.movementX * 0.022 * s;
       this.dy += e.movementY * 0.022 * s;
@@ -68,7 +90,9 @@ export class Input {
     on('wheel', (e) => { this.wheel += Math.sign(e.deltaY); });
     document.addEventListener('pointerlockchange', () => {
       this.locked = document.pointerLockElement === this.canvas;
+      if (this.locked) this.lockFailed = false;
     });
+    document.addEventListener('pointerlockerror', () => { this.lockFailed = true; });
   }
 
   poll(dt) {

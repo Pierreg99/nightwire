@@ -1,4 +1,30 @@
+import groovy.json.JsonSlurper
+
 apply plugin: 'com.android.application'
+
+// Version comes from nightwire/package.json: versionName = "x.y.z", versionCode = x*10000 + y*100 + z.
+// NIGHTWIRE_VERSION_CODE overrides the code (e.g. CI build number) when a store needs a higher one.
+def pkg = new JsonSlurper().parse(rootProject.file('../package.json'))
+def semver = (pkg.version ?: '1.0.0').tokenize('-')[0].tokenize('.').collect { it as int }
+def nwVersionName = pkg.version ?: '1.0.0'
+def nwVersionCode = (System.getenv('NIGHTWIRE_VERSION_CODE') ?: (semver[0] * 10000 + semver[1] * 100 + semver[2]).toString()) as int
+
+// Release signing never lives in the repo. Either point NIGHTWIRE_KEYSTORE_PROPERTIES at a
+// properties file outside the repo (storeFile, storePassword, keyAlias, keyPassword), or set
+// NIGHTWIRE_KEYSTORE / NIGHTWIRE_KEYSTORE_PASSWORD / NIGHTWIRE_KEY_ALIAS / NIGHTWIRE_KEY_PASSWORD.
+// Without either, release APK/AAB are built unsigned.
+def signing = [:]
+def propsPath = System.getenv('NIGHTWIRE_KEYSTORE_PROPERTIES')
+if (propsPath && file(propsPath).exists()) {
+    def props = new Properties()
+    file(propsPath).withInputStream { props.load(it) }
+    signing = [storeFile: props.getProperty('storeFile'), storePassword: props.getProperty('storePassword'),
+               keyAlias: props.getProperty('keyAlias'), keyPassword: props.getProperty('keyPassword')]
+} else if (System.getenv('NIGHTWIRE_KEYSTORE')) {
+    signing = [storeFile: System.getenv('NIGHTWIRE_KEYSTORE'), storePassword: System.getenv('NIGHTWIRE_KEYSTORE_PASSWORD'),
+               keyAlias: System.getenv('NIGHTWIRE_KEY_ALIAS'), keyPassword: System.getenv('NIGHTWIRE_KEY_PASSWORD')]
+}
+def hasSigning = signing.storeFile && file(signing.storeFile).exists() && signing.storePassword && signing.keyAlias
 
 android {
     namespace = "de.nightwire.district"
@@ -7,8 +33,8 @@ android {
         applicationId "de.nightwire.district"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode nwVersionCode
+        versionName nwVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,11 +42,24 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        if (hasSigning) {
+            release {
+                storeFile file(signing.storeFile)
+                storePassword signing.storePassword
+                keyAlias signing.keyAlias
+                keyPassword signing.keyPassword ?: signing.storePassword
+            }
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            // The game is a web bundle; R8 would only shrink the Capacitor bridge and risks
+            // stripping classes it loads by reflection. Keep it off, keep the build predictable.
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasSigning) signingConfig signingConfigs.release
         }
         debug {
             minifyEnabled false

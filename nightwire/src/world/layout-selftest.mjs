@@ -3,7 +3,7 @@ import {
   ANCHORS, BLOCK_HALL, BLOCK_SLAB, BOLLARD_Z, CONTAINER_ISLANDS, CUT_DOCKS, CUT_STRIP,
   DOORS, DUMMY_POS, HOF_POINTS, HOF_SHIFT, PARKED_SEDAN, SLABS, STRIP_BUILDINGS,
   STRIP_COVER, WAREHOUSE, zoneOf,
-} from './layout.js';
+} from './layout.mjs';
 
 function aabb(b) {
   return {

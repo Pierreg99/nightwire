@@ -8,7 +8,7 @@ Engine: Three.js + Vite. Product name: **NIGHTWIRE**. Setting: Neo-Duisburg nigh
 ## Skills
 
 - Cryo Core Lite (required): `.grok/skills/cryo-core-lite/SKILL.md`
-- Product bible: `GROK-BUILD-46-MASTER-PROMPT.md`
+- Product rules: this file + `nightwire/MANIFEST.md` (module status) + `nightwire/docs/BUILDS.md` (packaging)
 - Game lives in `nightwire/`
 
 ## Orchestration

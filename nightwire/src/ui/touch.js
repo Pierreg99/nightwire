@@ -12,56 +12,100 @@ export class TouchControls {
 
   show(on) {
     this.root.classList.toggle('hidden', !on);
+    document.body.classList.toggle('touch-on', !!on);
     this.game.settings.showTouch = on;
+    if (!on) this.releaseAll();
   }
 
+  // Every finger is tracked by Touch.identifier. e.touches[0] would pick up whichever finger
+  // touched the screen first, so holding the stick while looking used to steer with the wrong finger.
   _bindStick() {
     const st = this.stick;
-    const center = () => {
-      const r = st.getBoundingClientRect();
-      return { x: r.left + r.width / 2, y: r.top + r.height / 2, s: r.width / 2 };
+    let id = null;
+    let c = null;
+    const find = (list) => {
+      for (const t of list) if (t.identifier === id) return t;
+      return null;
     };
-    const apply = (cx, cy, e) => {
-      const t = e.touches ? e.touches[0] : e;
-      let x = (t.clientX - cx.x) / cx.s;
-      let y = (t.clientY - cx.y) / cx.s;
+    const apply = (t) => {
+      let x = (t.clientX - c.x) / c.s;
+      let y = (t.clientY - c.y) / c.s;
       const m = Math.hypot(x, y);
       if (m > 1) { x /= m; y /= m; }
       this.game.input.touchMove.x = x;
       this.game.input.touchMove.y = y;
-      this.knob.style.left = `${33 + x * 28}px`;
-      this.knob.style.top = `${33 + y * 28}px`;
+      this.game.input.touchMove.active = true;
+      this.knob.style.transform = `translate(${x * 28}px, ${y * 28}px)`;
     };
-    const start = (e) => { e.preventDefault(); this._c = center(); apply(this._c, e); };
-    const move = (e) => { if (this._c) apply(this._c, e); };
-    const end = () => {
-      this._c = null;
+    const reset = () => {
+      id = null;
+      c = null;
       this.game.input.touchMove.x = this.game.input.touchMove.y = 0;
-      this.knob.style.left = '33px'; this.knob.style.top = '33px';
+      this.game.input.touchMove.active = false;
+      this.knob.style.transform = '';
     };
-    st.addEventListener('touchstart', start, { passive: false });
-    st.addEventListener('touchmove', move, { passive: false });
+    st.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (id !== null) return;
+      const t = e.changedTouches[0];
+      const r = st.getBoundingClientRect();
+      c = { x: r.left + r.width / 2, y: r.top + r.height / 2, s: r.width / 2 };
+      id = t.identifier;
+      apply(t);
+    }, { passive: false });
+    st.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      const t = find(e.changedTouches);
+      if (t && c) apply(t);
+    }, { passive: false });
+    const end = (e) => { if (find(e.changedTouches)) reset(); };
     st.addEventListener('touchend', end);
+    st.addEventListener('touchcancel', end);
+    this._resetStick = reset;
   }
 
   _bindLook() {
-    let last = null;
     const pad = this.look;
-    pad.addEventListener('touchstart', (e) => { e.preventDefault(); last = e.touches[0]; }, { passive: false });
+    let id = null;
+    let last = null;
+    const find = (list) => {
+      for (const t of list) if (t.identifier === id) return t;
+      return null;
+    };
+    pad.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (id !== null) return;
+      const t = e.changedTouches[0];
+      id = t.identifier;
+      last = { x: t.clientX, y: t.clientY };
+    }, { passive: false });
     pad.addEventListener('touchmove', (e) => {
       e.preventDefault();
-      const t = e.touches[0];
-      if (!last) { last = t; return; }
+      const t = find(e.changedTouches);
+      if (!t || !last) return;
       const ads = this.game.touchAds ? this.game.settings.adsSens : 1;
       const s = this.game.settings.lookSensTouch * 0.08 * ads;
-      const dx = t.clientX - last.clientX;
-      const dy = t.clientY - last.clientY;
+      const dx = t.clientX - last.x;
+      const dy = t.clientY - last.y;
       const accel = 1 + Math.min(2.2, Math.hypot(dx, dy) * 0.04);
       this.game.input.touchLook.x += dx * s * 0.012 * accel;
       this.game.input.touchLook.y += dy * s * 0.012 * accel;
-      last = t;
+      last = { x: t.clientX, y: t.clientY };
     }, { passive: false });
-    pad.addEventListener('touchend', () => { last = null; });
+    const end = (e) => {
+      if (!find(e.changedTouches)) return;
+      id = null;
+      last = null;
+    };
+    pad.addEventListener('touchend', end);
+    pad.addEventListener('touchcancel', end);
+  }
+
+  /** App went to background or a menu opened: drop every held input so nothing sticks. */
+  releaseAll() {
+    this._resetStick?.();
+    this.game.touchFire = false;
+    this.game.touchAds = false;
   }
 
   _bindBtns() {
@@ -69,6 +113,7 @@ export class TouchControls {
       const el = document.getElementById(id);
       el.addEventListener('touchstart', (e) => { e.preventDefault(); on(); }, { passive: false });
       el.addEventListener('touchend', () => off && off());
+      el.addEventListener('touchcancel', () => off && off());
       el.addEventListener('mousedown', (e) => { e.preventDefault(); on(); });
       el.addEventListener('mouseup', () => off && off());
     };

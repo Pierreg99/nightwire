@@ -6,6 +6,8 @@
 import * as THREE from 'three';
 import { makeFacade } from './textures.mjs';
 import { wetAsphaltMaterial } from '../fx/wetAsphalt.mjs';
+import { addRainRipples } from '../fx/atmosphere.mjs';
+import { addLightShaft } from '../fx/LightShafts.mjs';
 
 export function mat(tex, opts = {}) {
   return new THREE.MeshStandardMaterial({
@@ -191,6 +193,8 @@ export function addLamp(world, x, z, color, zone, intensity = 2.4) {
   glow.position.set(x, 5.15, z);
   world.add(glow, zone);
 
+  addLightShaft(world, x, 5.08, z, color, 5.0, 2.3, zone);
+
   if (world.game.lights.budget < 8) {
     const light = new THREE.PointLight(color, intensity, 18, 1.8);
     light.position.set(x, 5.0, z);
@@ -269,6 +273,8 @@ export function addPuddle(world, x, z, size, zone) {
       polygonOffsetUnits: -4
     })
   );
+  // Rain rings on the water; the live reflection probe (ULTRA/HIGH) puts the neon into it.
+  addRainRipples(mesh.material, 1);
 
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(x, 0.045, z);
@@ -306,6 +312,8 @@ export function addAwning(world, x, z, w, d, zone = 'docks') {
   const glow = glowSprite(world.game.textures.glowWarm, 3.2);
   glow.position.set(x, 2.4, z);
   world.add(glow, zone);
+
+  addLightShaft(world, x, 2.4, z, 0xff9944, 2.35, 1.7, zone, null, 0.8);
 }
 
 export function addCrane(world, x, z) {
@@ -352,6 +360,7 @@ export function addCrane(world, x, z) {
   const key = new THREE.SpotLight(0x88e8ff, 3.6, 70, 0.55, 0.45);
   key.position.set(x, 26, z + 4);
   key.target.position.set(6, 0, -28);
+  addLightShaft(world, x, 26, z + 4, 0x88e8ff, Math.hypot(x - 6, 26, z + 4 + 28) * 0.92, 9, 'docks', { x: 6, y: 0, z: -28 }, 0.45);
   world.add(key, 'docks');
   world.add(key.target, 'docks');
 

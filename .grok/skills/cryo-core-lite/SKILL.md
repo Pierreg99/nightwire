@@ -4,15 +4,15 @@ description: >-
   Orchestrate NIGHTWIRE (tactical FPS × GTA/FiveM city slice) under Cryo Core Lite:
   S0/A05/A06/A07, max 2–3 agents, max 3 loops per module, A07 checklist, SafeMode L2.
   Use when the user mentions NIGHTWIRE, cryo-core-lite, GameASSISTSNT, Neo-Duisburg,
-  skim editor, wardrobe/skin editor, FiveM, COLD CARGO, or GROK-BUILD-46-MASTER-PROMPT.
+  skim editor, wardrobe/skin editor, FiveM, or COLD CARGO.
   Slash: /cryo-core-lite.
 ---
 
 # Cryo Core Lite — NIGHTWIRE
 
-> **S0 APPROVED 2026-09-17** · Working contract. Master prompt wins conflicts.
+> **S0 APPROVED 2026-09-17** · Working contract.
 
-Source of truth for product rules: `GROK-BUILD-46-MASTER-PROMPT.md` at the repo root.
+Product rules live in this skill, `AGENTS.md` and `nightwire/MANIFEST.md`. The old phase cards and master prompt were retired after the Phase 8 freeze.
 This skill is the working contract. Do not invent a 34-agent fan-out. Do not promise CoD parity.
 
 ## Roles (max 2–3 live)
@@ -30,7 +30,7 @@ Every visible drop goes through A07. Max 3 fix loops per module, then move on.
 
 - Name: **NIGHTWIRE**. Engine: Three.js WebGL2 + Vite. Desktop pointer-lock + first-class touch.
 - Setting: Neo-Duisburg / Rhein-Ruhr Night District. Tone: cinematic, wet, dirty, never cartoon.
-- Stack folders under `nightwire/` as in the master prompt. Fill them.
+- Stack folders live under `nightwire/src/`.
 
 ## Mandatory systems — all of them
 

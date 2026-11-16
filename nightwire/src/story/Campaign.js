@@ -1,4 +1,5 @@
 import { saveSkins } from '../characters/SkinData.js';
+import { lockPointer, unlockPointer } from '../core/Input.js';
 
 export class Campaign {
   constructor(game) {
@@ -15,12 +16,15 @@ export class Campaign {
   boot() {
     this.beat = 0;
     this.objective = 'Check the phone. Job waiting.';
-    this.game.hud.subtitle('KITE', 'Wire. Rain’s ugly tonight. Package is in Warehouse 09. Don’t work clean.');
-    this.game.audio?.radioLine();
+    // The location card owns the first seconds; KITE comes in over the rain, then the phone buzzes.
+    setTimeout(() => {
+      this.game.hud.subtitle('KITE', 'Wire. Rain’s ugly tonight. Package is in Warehouse 09. Don’t work clean.');
+      this.game.audio?.radioLine();
+    }, 1600);
     setTimeout(() => {
       this.game.phone.buzz('JOB: INTERCEPT — WAREHOUSE 09');
       this.objective = 'Accept the job — Warehouse 09, Hafen.';
-    }, 1400);
+    }, 4200);
   }
 
   accept() {
@@ -95,7 +99,10 @@ export class Campaign {
     }
     if (it.kind === 'light') {
       const l = g.lights.points[g.lights.points.length - 1];
-      if (l) l.intensity = l.intensity > 0.2 ? 0 : 1.6;
+      if (l) {
+        l.userData.off = !l.userData.off;
+        l.intensity = l.userData.off ? 0 : (l.userData.baseIntensity ?? 1.6);
+      }
       g.hud.notify('SWITCH');
       return true;
     }
@@ -114,7 +121,7 @@ export class Campaign {
     saveSkins(this.game.skins);
     this.game.mode = 'end';
     this.game.input.blocked = true;
-    document.exitPointerLock();
+    unlockPointer();
     const card = document.getElementById('endcard');
     card.classList.remove('hidden');
     document.getElementById('end-kicker').textContent = kind === 'boat' ? 'DOCK EXTRACT' : 'SAFEHOUSE EXTRACT';
@@ -126,7 +133,7 @@ export class Campaign {
       card.classList.add('hidden');
       this.game.mode = 'play';
       this.game.input.blocked = false;
-      this.game.canvas.requestPointerLock();
+      lockPointer(this.game.canvas);
       this.objective = 'District is yours. Heat still remembers.';
     };
     this.game.hud.subtitle('KITE', kind === 'boat' ? 'Boat’s clean. Don’t come back loud.' : 'Sleep in 4B. Wardrobe’s yours — Dock-Wear is unlocked.');

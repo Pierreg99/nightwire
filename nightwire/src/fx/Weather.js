@@ -1,22 +1,33 @@
 import * as THREE from 'three';
 
+// Rain is drawn as short streaks (line segments) instead of dots: two vertices per drop,
+// tail offset by fall speed and wind, additive so neon and sodium light pick it up.
+const WIND = 0.26;
+
+function seedRain(n, streak) {
+  const pos = new Float32Array(n * 6);
+  for (let i = 0; i < n; i++) {
+    const x = Math.random() * 24 - 12;
+    const y = Math.random() * 16;
+    const z = Math.random() * 18 - 4;
+    pos.set([x, y, z, x - WIND * streak, y + streak, z - WIND * 0.6 * streak], i * 6);
+  }
+  return pos;
+}
+
 export class Weather {
   constructor(game) {
     this.game = game;
     const n = game.qualityProfile?.rain || (game.settings.reducedFx ? 280 : 900);
     this.n = n;
-    const pos = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) {
-      pos[i * 3] = Math.random() * 24 - 12;
-      pos[i * 3 + 1] = Math.random() * 16;
-      pos[i * 3 + 2] = Math.random() * 18 - 4;
-    }
+    this.streak = game.qualityProfile?.rainStreak ?? 0.32;
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this.pts = new THREE.Points(geo, new THREE.PointsMaterial({
-      color: 0xa8c0d0, size: 0.045, transparent: true, opacity: 0.5,
-      depthWrite: false, sizeAttenuation: true,
+    geo.setAttribute('position', new THREE.BufferAttribute(seedRain(n, this.streak), 3));
+    this.pts = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({
+      color: 0x9fb8cc, transparent: true, opacity: 0.32,
+      depthWrite: false, blending: THREE.AdditiveBlending, fog: true,
     }));
+    this.pts.frustumCulled = false;
     game.camera.add(this.pts);
     this.geo = geo;
 
@@ -41,15 +52,11 @@ export class Weather {
   }
 
   setDensity(rain, steam) {
-    if (rain !== this.n) {
+    const streak = this.game.qualityProfile?.rainStreak ?? this.streak;
+    if (rain !== this.n || streak !== this.streak) {
       this.n = rain;
-      const pos = new Float32Array(rain * 3);
-      for (let i = 0; i < rain; i++) {
-        pos[i * 3] = Math.random() * 24 - 12;
-        pos[i * 3 + 1] = Math.random() * 16;
-        pos[i * 3 + 2] = Math.random() * 18 - 4;
-      }
-      this.geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      this.streak = streak;
+      this.geo.setAttribute('position', new THREE.BufferAttribute(seedRain(rain, streak), 3));
     }
     if (steam !== this.sn) {
       this.sn = steam;
@@ -72,13 +79,18 @@ export class Weather {
     this.pts.visible = true;
     this.steam.visible = this.steam2.visible = true;
     const a = this.geo.attributes.position.array;
+    const L = this.streak;
     for (let i = 0; i < this.n; i++) {
-      a[i * 3 + 1] -= dt * (9 + (i % 5));
-      a[i * 3 + 2] += dt * 2.4;
-      if (a[i * 3 + 1] < -2) {
-        a[i * 3] = Math.random() * 24 - 12;
-        a[i * 3 + 1] = 14;
-        a[i * 3 + 2] = Math.random() * 18 - 8;
+      const k = i * 6;
+      const fall = dt * (9 + (i % 5));
+      const drift = dt * 2.4;
+      a[k + 1] -= fall; a[k + 4] -= fall;
+      a[k + 2] += drift; a[k + 5] += drift;
+      if (a[k + 1] < -2) {
+        const x = Math.random() * 24 - 12;
+        const z = Math.random() * 18 - 8;
+        a[k] = x; a[k + 1] = 14; a[k + 2] = z;
+        a[k + 3] = x - WIND * L; a[k + 4] = 14 + L; a[k + 5] = z - WIND * 0.6 * L;
       }
     }
     this.geo.attributes.position.needsUpdate = true;

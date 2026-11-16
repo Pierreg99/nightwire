@@ -12,9 +12,9 @@ npm run dev
 
 Open `http://127.0.0.1:5173` and select **JACK IN**.
 
-## NIGHTWIRE v2.0.0
+## NIGHTWIRE v2.0
 
-NIGHTWIRE v2.0.0 consolidates the Machala foundation into a playable vertical slice.
+NIGHTWIRE v2.0 consolidates the Machala foundation into a playable vertical slice.
 
 ### Core systems
 
@@ -25,19 +25,6 @@ NIGHTWIRE v2.0.0 consolidates the Machala foundation into a playable vertical sl
 - **World** — vehicles, pedestrians, interactive props, Apartment 4B safehouse and zone streaming.
 - **Interface** — objective HUD, phone, interaction prompts, settings, accessibility and mobile controls.
 - **Release** — build scripts, Docker deployment, live checks, observability and feedback iteration.
-
-## Viewable game assets
-
-| Asset | View |
-|---|---|
-| Night-city dock street | [View asset](nightwire/assets/dock-street.png) |
-| Warehouse 09 | [View asset](nightwire/assets/warehouse-09.png) |
-| Apartment 4B safehouse | [View asset](nightwire/assets/apartment-4b.png) |
-| Dock boat extraction | [View asset](nightwire/assets/dock-boat.png) |
-| Weapon render: pistol | [View asset](nightwire/assets/weapon-pistol.png) |
-| Weapon render: SMG | [View asset](nightwire/assets/weapon-smg.png) |
-| Enemy tactical unit | [View asset](nightwire/assets/enemy-tactical.png) |
-| Phone interface | [View asset](nightwire/assets/phone-ui.png) |
 
 ## Mission flow
 
@@ -68,10 +55,11 @@ nightwire/
 - [Product overview](nightwire/README.md)
 - [v2 release](nightwire/docs/NIGHTWIRE_V2_RELEASE.md)
 - [Pass section v2](nightwire/docs/PASSES_V2.md)
-- [QA and freeze plan](nightwire/docs/QA_FREEZE_PLAN.md)
+- [QA and freeze](nightwire/docs/FULL_VERTICAL_SLICE_QA_FREEZE_V1.md)
+- [Builds: Android, Windows, Linux](nightwire/docs/BUILDS.md)
 
 ## Current release
 
-- **Version:** v2.0.0
-- **Branch:** `machala/render-foundation-v1`
-- **Status:** Vertical slice ready for deployment and live feedback.
+- **Version:** v2.0.1
+- **Packages:** Android APK/AAB, Windows portable EXE, Linux AppImage/DEB (see [BUILDS](nightwire/docs/BUILDS.md))
+- **Status:** Vertical slice, playable in the browser and as native packages.

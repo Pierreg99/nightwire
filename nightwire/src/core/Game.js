@@ -1,14 +1,17 @@
 import * as THREE from 'three';
+// Must run before any material compiles: patches the fog chunks into height fog.
+import { updateWet } from '../fx/atmosphere.mjs';
 import { Time } from './Time.js';
-import { Input } from './Input.js';
+import { Input, lockPointer } from './Input.js';
 import { loadSettings, saveSettings } from './Settings.js';
 import { detectEnv, resolveProfile, applyLightBudget } from './Quality.js';
 import { Bus } from './math.js';
 import { createCamera } from './camera.js';
-import { createTextures } from '../world/textures.js';
-import { World } from '../world/World.js';
-import { buildCity } from '../world/city.js';
-import { Heat } from '../world/Heat.js';
+import { createTextures } from '../world/textures.mjs';
+import { World } from '../world/World.mjs';
+import { buildCity } from '../world/city.mjs';
+import { dressCity } from '../world/dressing.mjs';
+import { Heat } from '../world/Heat.mjs';
 import { FPSController } from '../player/FPSController.js';
 import { Health } from '../player/Health.js';
 import { Stamina } from '../player/Stamina.js';
@@ -29,8 +32,15 @@ import { AudioEngine } from '../audio/AudioEngine.js';
 import { CombatFX } from '../fx/CombatFX.js';
 import { Weather } from '../fx/Weather.js';
 import { RenderPipeline, frameSize, requestStage } from '../fx/RenderPipeline.js';
-import { LOOK } from '../fx/look.js';
+import { LOOK } from '../fx/look.mjs';
 import { addSkyDome } from '../fx/sky.js';
+import { NeonFX } from '../fx/NeonFX.mjs';
+import { EnvProbe } from '../fx/EnvProbe.mjs';
+import { applyShaftProfile } from '../fx/LightShafts.mjs';
+import { applyWetProfile } from '../fx/wetAsphalt.mjs';
+import { StoryPresenter } from '../ui/StoryPresenter.mjs';
+import { applyTouchScale } from '../ui/pause.js';
+import { photo } from './photo.mjs';
 
 export class Game {
   constructor() {
@@ -76,13 +86,25 @@ export class Game {
     this.gfx._shadow(this.moon, this.qualityProfile);
     this.scene.add(this.moon);
     this.scene.add(this.moon.target);
+    // Rim: cold cyan from behind the player's usual view line, catches silhouettes and wet edges.
+    // Bounce: faint magenta from below, the neon coming back off the wet street. No shadows.
+    this.rim = new THREE.DirectionalLight(0x3ee0ff, this.qualityProfile.rim ?? 0.3);
+    this.rim.position.set(30, 18, -60);
+    this.scene.add(this.rim);
+    this.scene.add(this.rim.target);
+    this.bounce = new THREE.DirectionalLight(0xff2d6a, (this.qualityProfile.rim ?? 0.3) * 0.35);
+    this.bounce.position.set(0, -20, 6);
+    this.scene.add(this.bounce);
+    this.scene.add(this.bounce.target);
 
     this.world = new World(this);
     buildCity(this.world);
+    this.dressing = dressCity(this.world, this.qualityProfile);
 
     this.player = new FPSController(this);
     this.player.spawn(this.world.spawns.player);
     this.health = new Health(this);
+    this.bus.on('hurt', (e) => this.player.addTrauma(Math.min(0.6, 0.18 + (e?.n || 10) * 0.012)));
     this.stamina = new Stamina();
     this.weapons = new WeaponSystem(this);
     this.vehicles = new VehicleSystem(this);
@@ -101,10 +123,15 @@ export class Game {
     this.skim = new MapSkimEditor(this);
     this.story = new Campaign(this);
     this.editors = bindEditorShell(this);
+    this.presenter = new StoryPresenter(this);
 
     this.npcs.spawnAll();
     this.vehicles.spawnAll();
+    this.neon = new NeonFX(this);
+    this.neon.collect();
+    this.envProbe = new EnvProbe(this);
     this.touch.show(this.settings.showTouch);
+    applyTouchScale(this.settings.touchButtonScale ?? 1);
     this.applyQuality();
 
     this.bodyShadow = new THREE.Mesh(
@@ -128,10 +155,14 @@ export class Game {
     this.renderer.setAnimationLoop(() => this.frame());
   }
 
+  photo(kind, type) {
+    return photo(this, kind, type);
+  }
+
   _bindUi() {
     document.getElementById('btn-jack').onclick = () => this.jackIn();
     this.canvas.addEventListener('click', () => {
-      if (this.mode === 'play' && !this.input.blocked) this.canvas.requestPointerLock();
+      if (this.mode === 'play' && !this.input.blocked) lockPointer(this.canvas);
     });
     addEventListener('keydown', (e) => {
       if (this.mode === 'title') return;
@@ -158,6 +189,16 @@ export class Game {
       if (e.code === 'Backquote' && this.mode === 'play') this.cycleQuality();
       if (e.code === 'KeyM' && this.mode === 'play') { this.phone.open(); this.phone.showApp('map'); }
     });
+    // Android home button, alt-tab, minimise: release held inputs, pause, mute.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) return;
+      this.touch?.releaseAll();
+      this.input.keys.clear();
+      this.input.fire = false;
+      this.input.ads = false;
+      if (this.mode === 'play') this.pause.open();
+      this.audio?.ctx?.suspend?.().catch?.(() => {});
+    });
     if (window.DeviceOrientationEvent) {
       addEventListener('deviceorientation', (e) => {
         if (!this.settings.gyro || this.input.blocked) return;
@@ -176,7 +217,8 @@ export class Game {
     requestStage();
     this.mode = 'play';
     this.input.blocked = false;
-    this.canvas.requestPointerLock();
+    lockPointer(this.canvas);
+    this.presenter.intro();
     this.story.boot();
   }
 
@@ -233,6 +275,15 @@ export class Game {
     });
     applyLightBudget(this, profile.lights);
     this.weather?.setDensity(profile.rain, profile.steam);
+    const reduced = !!this.settings.reducedFx;
+    applyShaftProfile(this, profile, reduced);
+    applyWetProfile(profile, reduced);
+    this.envProbe?.apply(profile, reduced);
+    if (this.rim) {
+      this.rim.intensity = profile.rim ?? 0.3;
+      this.bounce.intensity = (profile.rim ?? 0.3) * 0.35;
+    }
+    this.audio?.setAmbienceLevel?.(profile.ambience ?? 1);
     const { w, h } = frameSize();
     const el = document.getElementById('quality-readout');
     if (el) {
@@ -246,6 +297,8 @@ export class Game {
 
   frame() {
     const dt = this.time.tick();
+    updateWet(dt, this.qualityProfile, this.settings.reducedFx);
+    this.neon?.update(dt, this.qualityProfile, this.settings.reducedFx);
     this.input.poll(dt);
     if (this.input.pressed('GamepadStart') && this.mode !== 'title' && this.mode !== 'end') {
       if (this.mode === 'pause') this.pause.close();
@@ -262,12 +315,26 @@ export class Game {
       }
     }
 
+    // Photo hook (smoke screenshots / devtools): a callback owns the camera, the world keeps living.
+    if (this.photoMode) {
+      this.npcs.update(dt);
+      this.weather.update(dt);
+      this.fx.update(dt);
+      this.photoMode(this.camera, dt);
+      this.presenter.update(dt);
+      this.dressing?.update(dt * 4, this.world.zoneAt(this.player.pos.z));
+      this.envProbe?.update(dt);
+      this.post.render(dt);
+      return;
+    }
+
     if (this.mode === 'title') {
       this.titleT += dt;
       const t = this.titleT;
       this.camera.position.set(8 + Math.sin(t * 0.12) * 2.2, 3.4, -18);
       this.camera.lookAt(22, 14, -72);
       this.weather.update(dt);
+      this.envProbe?.update(dt);
       this.post.render(dt);
       return;
     }
@@ -309,7 +376,12 @@ export class Game {
       this.fx.update(dt);
       this.weather.update(dt);
       this.prompt.update();
-      this.moon.target.position.copy(this.player.pos);
+      this.rim.target.position.copy(this.player.pos);
+      this.rim.position.set(this.player.pos.x + 30, 18, this.player.pos.z - 60);
+      this.bounce.target.position.copy(this.player.pos);
+      this.bounce.position.set(this.player.pos.x, this.player.pos.y - 20, this.player.pos.z + 6);
+      this.audio.updateAmbience?.(dt, this.hud?.zone);
+      this.dressing?.update(dt, this.hud?.zone);
       this.bodyShadow.position.set(this.player.pos.x, this.player.pos.y + 0.04, this.player.pos.z);
       this.audio.setListener(this.player.pos);
     } else {
@@ -319,11 +391,23 @@ export class Game {
       this.weather.update(dt);
     }
 
+    this.presenter.update(dt);
     this.hud.update(dt);
     this.phone.update();
     this.skinEditor.renderPreview();
-    this.moon.position.set(this.player.pos.x - 40, 50, this.player.pos.z + 18);
+    // Shadow camera follows the player, snapped to whole shadow texels (no shimmering edges).
+    const qp = this.qualityProfile;
+    const ts = qp.shadow > 0 ? (2 * (qp.shadowRadius || 30)) / qp.shadow : 0.05;
+    const sx = Math.round(this.player.pos.x / ts) * ts;
+    const sz = Math.round(this.player.pos.z / ts) * ts;
+    this.moon.position.set(sx - 40, 50, sz + 18);
+    this.moon.target.position.set(sx, 0, sz);
 
+    if (this.mode === 'play' && this.gfx.adapt(dt, this.camera)) {
+      const el = document.getElementById('quality-readout');
+      if (el) el.textContent = `${this.qualityProfile.label} · ${this.renderer.getPixelRatio().toFixed(2)}× adaptive`;
+    }
+    if (this.mode === 'play') this.envProbe.update(dt);
     if (this.mode === 'play' || this.mode === 'phone' || this.mode === 'pause') this.post.render(dt);
     this.input.flushPresses();
   }

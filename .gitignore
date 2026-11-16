@@ -1,5 +1,20 @@
 node_modules
 dist
+release
 .vite
 *.log
 .DS_Store
+
+# Packaging output and signing material never go into the repo
+*.apk
+*.aab
+*.exe
+*.AppImage
+*.deb
+*.jks
+*.keystore
+keystore.properties
+nightwire/android/local.properties
+nightwire/android/.gradle
+nightwire/android/app/build
+nightwire/android/build
